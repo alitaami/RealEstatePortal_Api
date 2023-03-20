@@ -25,7 +25,7 @@ namespace WebApiCourse.Controllers.v1
 
 
         /// <summary>
-        ///         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.OK)] ==> ApiResult it should change to desired output
+        ///         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.OK)] ==> ApiResult it should change to desired output 
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
