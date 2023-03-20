@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace WebFramework.Configuration.Swagger
 { 
-    public class SetVersionInPaths : IDocumentFilter
+    public class SetVersionInPaths : IDocumentFilter 
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
