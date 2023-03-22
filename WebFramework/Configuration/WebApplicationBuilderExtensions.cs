@@ -96,7 +96,7 @@ namespace WebFramework.Configuration
         {
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Data Source =.; Initial Catalog=.; Integrated Security=true;Trust Server Certificate=true;");
+                options.UseSqlServer("Data Source =.; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
         }
 

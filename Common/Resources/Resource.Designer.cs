@@ -79,6 +79,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to اطلاعات املاک نمیتواند خالی باشد.
+        /// </summary>
+        public static string EstateInfo {
+            get {
+                return ResourceManager.GetString("EstateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لطفا مجددا تلاش کنید.
         /// </summary>
         public static string GeneralErrorTryAgain {

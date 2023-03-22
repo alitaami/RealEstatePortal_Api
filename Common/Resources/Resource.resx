@@ -123,6 +123,9 @@
   <data name="EnterParametersCorrectlyAndCompletely" xml:space="preserve">
     <value>پارامترهای ارسالی را کامل و صحیح وارد کنید.</value>
   </data>
+  <data name="EstateInfo" xml:space="preserve">
+    <value>اطلاعات املاک نمیتواند خالی باشد</value>
+  </data>
   <data name="GeneralErrorTryAgain" xml:space="preserve">
     <value>لطفا مجددا تلاش کنید</value>
   </data>

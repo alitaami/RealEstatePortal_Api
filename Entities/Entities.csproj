@@ -31,8 +31,6 @@
   <ItemGroup>
     <Folder Include="Common\Enums\" />
     <Folder Include="Common\Dtos\" />
-    <Folder Include="Common\ViewModels\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
