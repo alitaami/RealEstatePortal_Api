@@ -19,6 +19,7 @@ namespace Entities.Models.User
         [Required]
         [StringLength(50)]
         public string AdvertiserName { get; set; }
+
         [Required]
         [StringLength(11)]
         public string AdvertiserNumber { get; set; }
@@ -40,11 +41,13 @@ namespace Entities.Models.User
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
 
+        public DateTimeOffset CreatedDate { get; set; }
 
         #region relations
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
+
 
         #endregion
 

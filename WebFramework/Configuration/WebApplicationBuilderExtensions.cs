@@ -1,22 +1,30 @@
-﻿using Data;
+﻿using Common.Utilities;
+using Data;
+using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Web;
+using Services.Interfaces;
+using Services.Interfaces.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using WebFramework.Configuration.Swagger;
 
 namespace WebFramework.Configuration
 {
@@ -68,7 +76,7 @@ namespace WebFramework.Configuration
 
                 AddCustomApiVersioning(builder);
 
-                //AddSwagger(builder);
+                AddSwagger(builder);
 
                 AddAppHsts(builder);
 
@@ -101,152 +109,154 @@ namespace WebFramework.Configuration
         }
 
 
-        //private static void AddSwagger(WebApplicationBuilder builder)
-        //{
-        //    Assert.NotNull(builder.Services, nameof(builder.Services));
+        private static void AddSwagger(WebApplicationBuilder builder)
+        {
+            Assert.NotNull(builder.Services, nameof(builder.Services));
 
-        //    //Add services to use Example Filters in swagger
-        //    //services.AddSwaggerExamples();
-        //    //Add services and configuration to use swagger
-        //    builder.Services.AddSwaggerGen(options =>
-        //    {
-        //        var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
-        //        //show controller XML comments like summary
-        //        options.IncludeXmlComments(xmlDocPath, true);
+            //Add services to use Example Filters in swagger
+            //services.AddSwaggerExamples();
+            //Add services and configuration to use swagger
+            builder.Services.AddSwaggerGen(options =>
+            {
+                 
+         
+                var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
+                //show controller XML comments like summary
+                options.IncludeXmlComments(xmlDocPath, true);
 
-        //        options.EnableAnnotations();
-        //        options.UseInlineDefinitionsForEnums();
-        //        //options.DescribeAllParametersInCamelCase();
-        //        //options.DescribeStringEnumsInCamelCase();
-        //        //options.UseReferencedDefinitionsForEnums();
-        //        //options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-        //        //options.IgnoreObsoleteActions();
-        //        //options.IgnoreObsoleteProperties();
-        //        //options.CustomSchemaIds(type => type.FullName);
+                //options.EnableAnnotations = true;
+                options.UseInlineDefinitionsForEnums();
+                //options.DescribeAllParametersInCamelCase();
+                //options.DescribeStringEnumsInCamelCase();
+                //options.UseReferencedDefinitionsForEnums();
+                //options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                //options.IgnoreObsoleteActions();
+                //options.IgnoreObsoleteProperties();
+                //options.CustomSchemaIds(type => type.FullName);
 
-        //        options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "API V1" });
-        //        options.SwaggerDoc("v2", new OpenApiInfo { Version = "v2", Title = "API V2" });
+                //options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "API V1" });
+                //options.SwaggerDoc("v2", new OpenApiInfo { Version = "v2", Title = "API V2" });
 
-        //        #region Filters
-        //        ////Enable to use [SwaggerRequestExample] & [SwaggerResponseExample]
-        //        //options.ExampleFilters();
+                #region Filters
+                ////Enable to use [SwaggerRequestExample] & [SwaggerResponseExample]
+                //options.ExampleFilters();
 
-        //        ////Adds an Upload button to endpoints which have [AddSwaggerFileUploadButton]
-        //        //options.OperationFilter<AddFileParamTypesOperationFilter>();
+                ////Adds an Upload button to endpoints which have [AddSwaggerFileUploadButton]
+                //options.OperationFilter<AddFileParamTypesOperationFilter>();
 
-        //        ////Set summary of action if not already set
-        //        options.OperationFilter<ApplySummariesOperationFilter>();
+                ////Set summary of action if not already set
+                options.OperationFilter<ApplySummariesOperationFilter>();
 
-        //        //#region Add UnAuthorized to Response
-        //        ////Add 401 response and security requirements (Lock icon) to actions that need authorization
-        //        options.OperationFilter<UnauthorizedResponsesOperationFilter>(true, "Bearer");
-        //        //#endregion
+                //#region Add UnAuthorized to Response
+                ////Add 401 response and security requirements (Lock icon) to actions that need authorization
+                options.OperationFilter<UnauthorizedResponsesOperationFilter>(true, "Bearer");
+                //#endregion
 
-        //        #region security for swagger
+                #region security for swagger
 
-        //        //        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        //        //        {
-        //        //            In = ParameterLocation.Header,
-        //        //            Description = "Please enter a valid token",
-        //        //            Name = "Authorization",
-        //        //            Type = SecuritySchemeType.Http,
-        //        //            BearerFormat = "JWT",
-        //        //            Scheme = "Bearer"
-        //        //        });
-        //        //        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        //        //{
-        //        //    {
-        //        //        new OpenApiSecurityScheme
-        //        //        {
-        //        //            Reference = new OpenApiReference
-        //        //            {
-        //        //                Type=ReferenceType.SecurityScheme,
-        //        //                Id="Bearer"
-        //        //            }
-        //        //        },
-        //        //        new string[]{}
-        //        //    }
-        //        //});
+                //        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //        {
+                //            In = ParameterLocation.Header,
+                //            Description = "Please enter a valid token",
+                //            Name = "Authorization",
+                //            Type = SecuritySchemeType.Http,
+                //            BearerFormat = "JWT",
+                //            Scheme = "Bearer"
+                //        });
+                //        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                //{
+                //    {
+                //        new OpenApiSecurityScheme
+                //        {
+                //            Reference = new OpenApiReference
+                //            {
+                //                Type=ReferenceType.SecurityScheme,
+                //                Id="Bearer"
+                //            }
+                //        },
+                //        new string[]{}
+                //    }
+                //});
 
-        //        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        //        {
-        //            Type = SecuritySchemeType.OAuth2,
-        //            Flows = new OpenApiOAuthFlows
-        //            {
-        //                Password = new OpenApiOAuthFlow
-        //                {
-        //                    TokenUrl = new Uri("https://localhost:7188/api/v1/users/Token"),
-        //                    Scopes = new Dictionary<string, string>
-        //    {
-        //        {"read", "Read access to protected resources."},
-        //        {"write", "Write access to protected resources."},
-        //    }
-        //                }
-        //            }
-        //        });
+            //    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            //    {
+            //        Type = SecuritySchemeType.OAuth2,
+            //        Flows = new OpenApiOAuthFlows
+            //        {
+            //            Password = new OpenApiOAuthFlow
+            //            {
+            //                TokenUrl = new Uri("https://localhost:7188/api/v1/users/Token"),
+            //                Scopes = new Dictionary<string, string>
+            //{
+            //    {"read", "Read access to protected resources."},
+            //    {"write", "Write access to protected resources."},
+            //}
+            //            }
+            //        }
+            //    });
 
-        //        #endregion
+                #endregion
 
-        //        //#region Add Jwt Authentication
-        //        //Add Lockout icon on top of swagger ui page to authenticate
+                //#region Add Jwt Authentication
+                //Add Lockout icon on top of swagger ui page to authenticate
 
-        //        //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        //        //{
-        //        //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        //        //    Name = "Authorization",
-        //        //    In = ParameterLocation.Header,
-        //        //    Type = SecuritySchemeType.Http,
-        //        //    Scheme = "bearer"
-        //        //});
+                //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //{
+                //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                //    Name = "Authorization",
+                //    In = ParameterLocation.Header,
+                //    Type = SecuritySchemeType.Http,
+                //    Scheme = "bearer"
+                //});
 
-        //        ////options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-        //        ////{
-        //        ////    {"Bearer", new string[] { }}
-        //        ////});
-        //        ///
-        //        //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        //        //{
-        //        //    Type = SecuritySchemeType.OAuth2,
-        //        //    Flows = new OpenApiOAuthFlows
-        //        //    {
-        //        //        Implicit = new OpenApiOAuthFlow
-        //        //        {
-        //        //            AuthorizationUrl = new Uri("https://localhost:7188/api/v1/User/login"),
-        //        //            Scopes = new Dictionary<string, string>
-        //        //    {
-        //        //        {"read", "Read access to protected resources."},
-        //        //        {"write", "Write access to protected resources."},
-        //        //    }
-        //        //        }
-        //        //    }
-        //        //});
-        //        #endregion
+                ////options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                ////{
+                ////    {"Bearer", new string[] { }}
+                ////});
+                ///
+                //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //{
+                //    Type = SecuritySchemeType.OAuth2,
+                //    Flows = new OpenApiOAuthFlows
+                //    {
+                //        Implicit = new OpenApiOAuthFlow
+                //        {
+                //            AuthorizationUrl = new Uri("https://localhost:7188/api/v1/User/login"),
+                //            Scopes = new Dictionary<string, string>
+                //    {
+                //        {"read", "Read access to protected resources."},
+                //        {"write", "Write access to protected resources."},
+                //    }
+                //        }
+                //    }
+                //});
+                #endregion
 
-        //        #region Versioning
-        //        // Remove version parameter from all Operations
-        //        options.OperationFilter<RemoveVersionParameters>();
+                //#region Versioning
+                //// Remove version parameter from all Operations
+                //options.OperationFilter<RemoveVersionParameters>();
 
-        //        //set version "api/v{version}/[controller]" from current swagger doc verion
-        //        options.DocumentFilter<SetVersionInPaths>();
+                ////set version "api/v{version}/[controller]" from current swagger doc verion
+                //options.DocumentFilter<SetVersionInPaths>();
 
-        //        //Seperate and categorize end-points by doc version
-        //        options.DocInclusionPredicate((docName, apiDesc) =>
-        //        {
-        //            if (!apiDesc.TryGetMethodInfo(out MethodInfo methodInfo)) return false;
+                ////Seperate and categorize end-points by doc version
+                //options.DocInclusionPredicate((docName, apiDesc) =>
+                //{
+                //    if (!apiDesc.TryGetMethodInfo(out MethodInfo methodInfo)) return false;
 
-        //            var versions = methodInfo.DeclaringType
-        //                .GetCustomAttributes<ApiVersionAttribute>(true)
-        //                .SelectMany(attr => attr.Versions);
+                //    var versions = methodInfo.DeclaringType
+                //        .GetCustomAttributes<ApiVersionAttribute>(true)
+                //        .SelectMany(attr => attr.Versions);
 
-        //            return versions.Any(v => $"v{v.ToString()}" == docName);
-        //        });
-        //        #endregion
+                //    return versions.Any(v => $"v{v.ToString()}" == docName);
+                //});
+                //#endregion
 
-        //        //If use FluentValidation then must be use this package to show validation in swagger (MicroElements.Swashbuckle.FluentValidation)
-        //        //options.AddFluentValidationRules();
+                //If use FluentValidation then must be use this package to show validation in swagger (MicroElements.Swashbuckle.FluentValidation)
+                //options.AddFluentValidationRules();
 
-        //    });
-        //}
+            });
+        }
 
         private static void SetupNlog(WebApplicationBuilder builder)
         {
@@ -438,8 +448,8 @@ namespace WebFramework.Configuration
         private static void AddAppServices(WebApplicationBuilder builder)
         {
 
-            //builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            //builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             //builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
 

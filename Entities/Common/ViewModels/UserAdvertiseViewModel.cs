@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.Models.User;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace Entities.Common.ViewModels
         [Required]
         [StringLength(11)]
         public string AdvertiserNumber { get; set; }
+
         [Required]
         [StringLength(200)]
         public string HomeAddress { get; set; }
@@ -36,6 +39,16 @@ namespace Entities.Common.ViewModels
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
 
+
+    }
+
+    public class UserAdvertisesForHomePage
+    {
+        public int AdvertiseId { get; set; }
+        public string AdvertiseTitle { get; set; }
+        public string AdvertiserName { get; set; }
+        public string AdvertiserPhone { get; set; }
+        public long Price { get; set; }
 
     }
 }

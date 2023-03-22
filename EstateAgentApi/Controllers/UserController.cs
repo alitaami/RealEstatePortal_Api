@@ -15,7 +15,7 @@ namespace WebApiCourse.Controllers.v1
     /// 
     /// </summary>
     [SwaggerTag("لیست سرویسهای  کاربر")]
-    [ApiVersion("1")]
+   
     public class UserController : APIControllerBase
     {
         //private readonly IUserService _user;

@@ -1,4 +1,5 @@
 ﻿using Common.Resources;
+using Entities.Models.User;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Common.ViewModels
@@ -47,4 +48,7 @@ namespace Entities.Common.ViewModels
 
         }
     }
+
+   
+
 }

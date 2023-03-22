@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebApiCourse.WebFramework.Middlewares;
+using WebFramework.Configuration.Swagger;
 
 namespace WebFramework.Configuration
 {
@@ -32,7 +33,7 @@ namespace WebFramework.Configuration
 
                 if (app.Environment.IsDevelopment())
                 {
-                    //app.UseSwaggerAndUI();
+                    app.UseSwaggerAndUI();
 
                 }
                 return app;

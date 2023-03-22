@@ -61,6 +61,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to آگهی ای یافت نشد.
+        /// </summary>
+        public static string AdveriseNotFound {
+            get {
+                return ResourceManager.GetString("AdveriseNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to سن نباید کمتر از 18 باشد.
         /// </summary>
         public static string AgeError {
