@@ -8,6 +8,8 @@ using System.Net.Mime;
 using System.Net;
 using WebApiCourse.WebFramework.Base;
 using Entities.Models.User;
+using Entities.Common.ViewModels;
+using Entities.Common.Dtos;
 
 namespace EstateAgentApi.Controllers
 {
@@ -29,7 +31,7 @@ namespace EstateAgentApi.Controllers
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(List<UserAdvertises>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserAdvertisesForHomePage), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
@@ -39,5 +41,20 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
+        
+        [HttpGet]
+        [SwaggerOperation("آگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> AdvertiseDetail(int advertiseId)
+        {
+            var result = await _Ad.GetAdveriseForShow(advertiseId);
+
+            return APIResponse(result);
+        }
+
     }
 }

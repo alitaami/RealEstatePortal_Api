@@ -11,5 +11,6 @@ namespace Services.Interfaces
     public interface IAdvertiseService
     {
         public Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = ""  );
+        public Task<ServiceResult> GetAdveriseForShow(int advertiseId);
     }
 }
