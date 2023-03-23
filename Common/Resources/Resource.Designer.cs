@@ -79,6 +79,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تلفن همراه و یا نام کاربری تکراریست!.
+        /// </summary>
+        public static string AlreadyExists {
+            get {
+                return ResourceManager.GetString("AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری و یا کد املاک تکراریست!.
+        /// </summary>
+        public static string AlreadyExists2 {
+            get {
+                return ResourceManager.GetString("AlreadyExists2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to پارامترهای ارسالی را کامل و صحیح وارد کنید..
         /// </summary>
         public static string EnterParametersCorrectlyAndCompletely {

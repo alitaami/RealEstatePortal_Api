@@ -123,6 +123,12 @@
   <data name="AgeError" xml:space="preserve">
     <value>سن نباید کمتر از 18 باشد</value>
   </data>
+  <data name="AlreadyExists" xml:space="preserve">
+    <value>تلفن همراه و یا نام کاربری تکراریست!</value>
+  </data>
+  <data name="AlreadyExists2" xml:space="preserve">
+    <value>تلفن همراه ، نام کاربری و یا کد املاک تکراریست!</value>
+  </data>
   <data name="EnterParametersCorrectlyAndCompletely" xml:space="preserve">
     <value>پارامترهای ارسالی را کامل و صحیح وارد کنید.</value>
   </data>

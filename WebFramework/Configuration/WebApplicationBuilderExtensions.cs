@@ -1,12 +1,17 @@
-﻿using Common.Utilities;
+﻿using Common;
+using Common.Utilities;
 using Data;
 using Data.Repositories;
+using Entities.Models.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -21,6 +26,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -52,13 +58,13 @@ namespace WebFramework.Configuration
                 #region   AddJwtAuthentication  
 
                 // it is for ==>  be able to inject in other classes 
-                //builder.Services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
+                builder.Services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
 
                 // to get jwtSettings from  appsettings.Development 
-                //var _jwtSetting = builder.Configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+                var _jwtSetting = builder.Configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
 
                 //builder.Services.AddJwtAuthentication(_jwtSetting);
-                //AddJwtAuthentication(builder.Services, _jwtSetting);
+                AddJwtAuthentication(builder.Services, _jwtSetting);
 
                 #endregion
 
@@ -74,7 +80,7 @@ namespace WebFramework.Configuration
 
                 AddAppServices(builder);
 
-                AddCustomApiVersioning(builder);
+                //AddCustomApiVersioning(builder);
 
                 AddSwagger(builder);
 
@@ -92,7 +98,6 @@ namespace WebFramework.Configuration
                 throw;
             }
         }
-
         private static void ConfigLogging(WebApplicationBuilder builder)
         {
             builder.Logging.ClearProviders();
@@ -118,13 +123,11 @@ namespace WebFramework.Configuration
             //Add services and configuration to use swagger
             builder.Services.AddSwaggerGen(options =>
             {
-                 
-         
                 var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
                 //show controller XML comments like summary
                 options.IncludeXmlComments(xmlDocPath, true);
 
-                //options.EnableAnnotations = true;
+                //options.EnableAnnotations();
                 options.UseInlineDefinitionsForEnums();
                 //options.DescribeAllParametersInCamelCase();
                 //options.DescribeStringEnumsInCamelCase();
@@ -134,7 +137,7 @@ namespace WebFramework.Configuration
                 //options.IgnoreObsoleteProperties();
                 //options.CustomSchemaIds(type => type.FullName);
 
-                //options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "API V1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "API V1" });
                 //options.SwaggerDoc("v2", new OpenApiInfo { Version = "v2", Title = "API V2" });
 
                 #region Filters
@@ -178,22 +181,22 @@ namespace WebFramework.Configuration
                 //    }
                 //});
 
-            //    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            //    {
-            //        Type = SecuritySchemeType.OAuth2,
-            //        Flows = new OpenApiOAuthFlows
-            //        {
-            //            Password = new OpenApiOAuthFlow
-            //            {
-            //                TokenUrl = new Uri("https://localhost:7188/api/v1/users/Token"),
-            //                Scopes = new Dictionary<string, string>
-            //{
-            //    {"read", "Read access to protected resources."},
-            //    {"write", "Write access to protected resources."},
-            //}
-            //            }
-            //        }
-            //    });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Password = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri("https://localhost:7076/api/Account/Login"),
+                            Scopes = new Dictionary<string, string>
+            {
+                {"read", "Read access to protected resources."},
+                {"write", "Write access to protected resources."},
+            }
+                        }
+                    }
+                });
 
                 #endregion
 
@@ -232,14 +235,14 @@ namespace WebFramework.Configuration
                 //});
                 #endregion
 
-                //#region Versioning
+                #region Versioning
                 //// Remove version parameter from all Operations
                 //options.OperationFilter<RemoveVersionParameters>();
 
-                ////set version "api/v{version}/[controller]" from current swagger doc verion
+                //////set version "api/v{version}/[controller]" from current swagger doc verion
                 //options.DocumentFilter<SetVersionInPaths>();
 
-                ////Seperate and categorize end-points by doc version
+                //////Seperate and categorize end-points by doc version
                 //options.DocInclusionPredicate((docName, apiDesc) =>
                 //{
                 //    if (!apiDesc.TryGetMethodInfo(out MethodInfo methodInfo)) return false;
@@ -250,7 +253,7 @@ namespace WebFramework.Configuration
 
                 //    return versions.Any(v => $"v{v.ToString()}" == docName);
                 //});
-                //#endregion
+#endregion
 
                 //If use FluentValidation then must be use this package to show validation in swagger (MicroElements.Swashbuckle.FluentValidation)
                 //options.AddFluentValidationRules();
@@ -320,137 +323,139 @@ namespace WebFramework.Configuration
             return services;
         }
 
-        //public static void AddJwtAuthentication(this IServiceCollection services, JwtSettings jwtSettings)
-        //{
-        //    services.AddAuthentication(options =>
-        //    {
-        //        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        //    }).AddJwtBearer(options =>
-        //    {
-        //        var secretkey = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
-        //        var encryptKey = Encoding.UTF8.GetBytes(jwtSettings.Encryptkey);
-
-        //        var validationParameters = new TokenValidationParameters
-        //        {
-        //            ClockSkew = TimeSpan.Zero, // default: 5 min
-        //            RequireSignedTokens = true,
-
-        //            ValidateIssuerSigningKey = true,
-        //            IssuerSigningKey = new SymmetricSecurityKey(secretkey),
-
-        //            RequireExpirationTime = true,
-        //            ValidateLifetime = true,
-
-        //            ValidateAudience = true, //default : false
-        //            ValidAudience = jwtSettings.Audience,
-
-        //            ValidateIssuer = true, //default : false
-        //            ValidIssuer = jwtSettings.Issuer,
-
-        //            TokenDecryptionKey = new SymmetricSecurityKey(encryptKey),
-        //        };
-
-        //        options.RequireHttpsMetadata = false;
-        //        options.SaveToken = true;
-        //        options.TokenValidationParameters = validationParameters;
-
-        //        // these are for SecurityStamp of user
-        //        options.Events = new JwtBearerEvents
-        //        {
-        //            OnAuthenticationFailed = context =>
-        //            {
-        //                //var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
-        //                //logger.LogError("Authentication failed.", context.Exception);
-
-        //                if (context.Exception != null)
-        //                    throw new UnauthorizedAccessException("Authentication failed.");
-
-
-        //                return Task.CompletedTask;
-        //            },
-        //            OnTokenValidated = async context =>
-        //            {
-        //                //var applicationSignInManager = context.HttpContext.RequestServices.GetRequiredService<IApplicationSignInManager>();
-        //                var userRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<User>>();
-        //                var userroleRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<UserRoles>>();
-        //                var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-
-        //                var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
-        //                if (claimsIdentity.Claims?.Any() != true)
-        //                    context.Fail("This token has no claims.");
-
-        //                var securityStamp = claimsIdentity.FindFirstValue(new ClaimsIdentityOptions().SecurityStampClaimType);
-        //                if (!securityStamp.HasValue())
-        //                    context.Fail("This token has no secuirty stamp");
-
-        //                //Find user and token from database and perform your custom validation
-        //                var userId = claimsIdentity.GetUserId<int>();
-        //                var user = await userRepository.GetByIdAsync(context.HttpContext.RequestAborted, userId);
-
-        //                if (user.SecurityStamp != Guid.Parse(securityStamp))
-        //                    context.Fail("Token secuirty stamp is not valid.");
-
-        //                //var validatedUser = await applicationSignInManager.ValidateSecurityStampAsync(context.Principal);
-        //                //if (validatedUser == null)
-        //                //    context.Fail("Token secuirty stamp is not valid.");
-
-        //                if (!user.IsActive)
-        //                    context.Fail("User is not active.");
-
-        //                //await userService.UpdateLastLoginDateAsync(userId, context.HttpContext.RequestAborted);
-        //            },
-        //            OnChallenge = context =>
-        //            {
-        //                //var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
-        //                //logger.LogError("OnChallenge error", context.Error, context.ErrorDescription);
-
-        //                if (context.AuthenticateFailure != null)
-        //                    throw new UnauthorizedAccessException("An error occurred");
-        //                throw new UnauthorizedAccessException("You are unauthorized to access this resource.");
-
-        //                //return Task.CompletedTask;
-        //            }
-        //        };
-        //    });
-        //}
-
-        private static void AddCustomApiVersioning(WebApplicationBuilder builder)
+        public static void AddJwtAuthentication(this IServiceCollection services, JwtSettings jwtSettings)
         {
-            builder.Services.AddApiVersioning(options =>
+            services.AddAuthentication(options =>
             {
-                //url segment => {version}
-                options.DefaultApiVersion = new ApiVersion(1, 0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ReportApiVersions = true;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                var secretkey = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
+                var encryptKey = Encoding.UTF8.GetBytes(jwtSettings.Encryptkey);
 
-                //ApiVersion.TryParse("1.0", out var version10);
-                //ApiVersion.TryParse("1", out var version1);
-                //var a = version10 == version1;
+                var validationParameters = new TokenValidationParameters
+                {
+                    ClockSkew = TimeSpan.Zero, // default: 5 min
+                    RequireSignedTokens = true,
 
-                //options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
-                // api/posts?api-version=1
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretkey),
 
-                //options.ApiVersionReader = new UrlSegmentApiVersionReader();
-                // api/v1/posts
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
 
-                //options.ApiVersionReader = new HeaderApiVersionReader(new[] { "Api-Version" });
-                // header => Api-Version : 1
+                    ValidateAudience = true, //default : false
+                    ValidAudience = jwtSettings.Audience,
 
-                //options.ApiVersionReader = new MediaTypeApiVersionReader()
+                    ValidateIssuer = true, //default : false
+                    ValidIssuer = jwtSettings.Issuer,
 
-                //options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"), new UrlSegmentApiVersionReader())
-                // combine of [querystring] & [urlsegment]
+                    TokenDecryptionKey = new SymmetricSecurityKey(encryptKey),
+                };
+
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = validationParameters;
+
+                // these are for SecurityStamp of user
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        //var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
+                        //logger.LogError("Authentication failed.", context.Exception);
+
+                        if (context.Exception != null)
+                            throw new UnauthorizedAccessException("Authentication failed.");
+
+
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = async context =>
+                    {
+                        //var applicationSignInManager = context.HttpContext.RequestServices.GetRequiredService<IApplicationSignInManager>();
+                        var userRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<User>>();
+                        var userroleRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<UserRoles>>();
+                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+
+                        var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+                        if (claimsIdentity.Claims?.Any() != true)
+                            context.Fail("This token has no claims.");
+
+                        var securityStamp = claimsIdentity.FindFirstValue(new ClaimsIdentityOptions().SecurityStampClaimType);
+                        if (!securityStamp.HasValue())
+                            context.Fail("This token has no secuirty stamp");
+
+                        //Find user and token from database and perform your custom validation
+                        var userId = claimsIdentity.GetUserId<int>();
+                        var user = await userRepository.GetByIdAsync(context.HttpContext.RequestAborted, userId);
+
+                        if (user.SecurityStamp != Guid.Parse(securityStamp))
+                            context.Fail("Token secuirty stamp is not valid.");
+
+                        //var validatedUser = await applicationSignInManager.ValidateSecurityStampAsync(context.Principal);
+                        //if (validatedUser == null)
+                        //    context.Fail("Token secuirty stamp is not valid.");
+
+                        if (!user.IsActive)
+                            context.Fail("User is not active.");
+
+                        //await userService.UpdateLastLoginDateAsync(userId, context.HttpContext.RequestAborted);
+                    },
+                    OnChallenge = context =>
+                    {
+                        //var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
+                        //logger.LogError("OnChallenge error", context.Error, context.ErrorDescription);
+
+                        if (context.AuthenticateFailure != null)
+                            throw new UnauthorizedAccessException("An error occurred");
+                        throw new UnauthorizedAccessException("You are unauthorized to access this resource.");
+
+                        //return Task.CompletedTask;
+                    }
+                };
             });
-
         }
+
+        //private static void AddCustomApiVersioning(WebApplicationBuilder builder)
+        //{
+        //    builder.Services.AddApiVersioning(options =>
+        //    {
+        //        //url segment => {version}
+        //        options.DefaultApiVersion = new ApiVersion(1, 0);
+        //        options.AssumeDefaultVersionWhenUnspecified = true;
+        //        options.ReportApiVersions = true;
+
+        //        //ApiVersion.TryParse("1.0", out var version10);
+        //        //ApiVersion.TryParse("1", out var version1);
+        //        //var a = version10 == version1;
+
+        //        //options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+        //        // api/posts?api-version=1
+
+        //        //options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        //        // api/v1/posts
+
+        //        //options.ApiVersionReader = new HeaderApiVersionReader(new[] { "Api-Version" });
+        //        // header => Api-Version : 1
+
+        //        //options.ApiVersionReader = new MediaTypeApiVersionReader()
+
+        //        //options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"), new UrlSegmentApiVersionReader())
+        //        // combine of [querystring] & [urlsegment]
+        //    });
+
+        //}
         private static void AddAppServices(WebApplicationBuilder builder)
         {
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
-            //builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();      
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
 
         }
