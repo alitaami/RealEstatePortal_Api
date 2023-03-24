@@ -213,7 +213,7 @@ namespace Services.Interfaces.Services
                     .TableNoTracking
                     .Where(u => u.UserId == userId && !u.IsDelete);
 
-
+                 
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
