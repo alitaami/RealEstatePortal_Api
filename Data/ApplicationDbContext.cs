@@ -1,5 +1,6 @@
 ﻿using Common.Utilities;
 using Entities.Common;
+using Entities.Models.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -36,7 +37,15 @@ namespace Data
 
             // When it creates tables , it pluralize name   example =>  Class name : User , TableName : Users
             modelBuilder.AddPluralizingTableNameConvention();
-             
+
+
+            modelBuilder.Entity<User>()
+               .HasIndex(x => x.UserName)
+               .IsUnique();
+
+            modelBuilder.Entity<User>()
+               .HasIndex(x => x.PhoneNumber)
+               .IsUnique();
         }
         #endregion 
 

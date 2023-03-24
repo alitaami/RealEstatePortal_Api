@@ -6,8 +6,9 @@ using Entities.Base;
 namespace WebApiCourse.WebFramework.Base
 {
 
+    [Route("api/[controller]/[action]")]
     [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]/[action]")]// api/v1/[controller]
+    //[Route("api/v{version:apiVersion}/[controller]/[action]")]// api/v1/[controller]
     public class APIControllerBase : ControllerBase
     {
         protected IActionResult APIResponse(ServiceResult serviceResult)

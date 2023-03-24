@@ -117,11 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdExists" xml:space="preserve">
+    <value>آگهی ای با این نام موجود است</value>
+  </data>
+  <data name="AdveriseNotFound" xml:space="preserve">
+    <value>آگهی ای یافت نشد</value>
+  </data>
   <data name="AgeError" xml:space="preserve">
     <value>سن نباید کمتر از 18 باشد</value>
   </data>
+  <data name="AlreadyExists" xml:space="preserve">
+    <value>تلفن همراه و یا نام کاربری تکراریست!</value>
+  </data>
+  <data name="AlreadyExists2" xml:space="preserve">
+    <value>تلفن همراه ، نام کاربری و یا کد املاک تکراریست!</value>
+  </data>
   <data name="EnterParametersCorrectlyAndCompletely" xml:space="preserve">
     <value>پارامترهای ارسالی را کامل و صحیح وارد کنید.</value>
+  </data>
+  <data name="EstateInfo" xml:space="preserve">
+    <value>اطلاعات املاک نمیتواند خالی باشد</value>
   </data>
   <data name="GeneralErrorTryAgain" xml:space="preserve">
     <value>لطفا مجددا تلاش کنید</value>
@@ -134,6 +149,9 @@
   </data>
   <data name="NotFound" xml:space="preserve">
     <value>یافت نشد</value>
+  </data>
+  <data name="PasswordDoesntMatch" xml:space="preserve">
+    <value>رمز عبور قبلی نادرست است</value>
   </data>
   <data name="PasswordMin" xml:space="preserve">
     <value>رمز عبور نباید کمتر از 8 حرف باشد</value>
@@ -161,5 +179,8 @@
   </data>
   <data name="UserIsNotActive" xml:space="preserve">
     <value>حساب کاربری فعال نیست</value>
+  </data>
+  <data name="WrongAdvertise" xml:space="preserve">
+    <value>چنین آگهی ای برای این شخص تعریف نشده است</value>
   </data>
 </root>

@@ -31,7 +31,7 @@ namespace WebFramework.Configuration.Swagger
             if (includeUnauthorizedAndForbiddenResponses)
             {
                 operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
-                operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
+                operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden(you do not have permissions!!)" });
             }
 
             operation.Security = new List<OpenApiSecurityRequirement>

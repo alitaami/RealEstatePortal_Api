@@ -61,6 +61,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to آگهی ای با این نام موجود است.
+        /// </summary>
+        public static string AdExists {
+            get {
+                return ResourceManager.GetString("AdExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to آگهی ای یافت نشد.
+        /// </summary>
+        public static string AdveriseNotFound {
+            get {
+                return ResourceManager.GetString("AdveriseNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to سن نباید کمتر از 18 باشد.
         /// </summary>
         public static string AgeError {
@@ -70,11 +88,38 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تلفن همراه و یا نام کاربری تکراریست!.
+        /// </summary>
+        public static string AlreadyExists {
+            get {
+                return ResourceManager.GetString("AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری و یا کد املاک تکراریست!.
+        /// </summary>
+        public static string AlreadyExists2 {
+            get {
+                return ResourceManager.GetString("AlreadyExists2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to پارامترهای ارسالی را کامل و صحیح وارد کنید..
         /// </summary>
         public static string EnterParametersCorrectlyAndCompletely {
             get {
                 return ResourceManager.GetString("EnterParametersCorrectlyAndCompletely", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اطلاعات املاک نمیتواند خالی باشد.
+        /// </summary>
+        public static string EstateInfo {
+            get {
+                return ResourceManager.GetString("EstateInfo", resourceCulture);
             }
         }
         
@@ -111,6 +156,15 @@ namespace Common.Resources {
         public static string NotFound {
             get {
                 return ResourceManager.GetString("NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رمز عبور قبلی نادرست است.
+        /// </summary>
+        public static string PasswordDoesntMatch {
+            get {
+                return ResourceManager.GetString("PasswordDoesntMatch", resourceCulture);
             }
         }
         
@@ -192,6 +246,15 @@ namespace Common.Resources {
         public static string UserIsNotActive {
             get {
                 return ResourceManager.GetString("UserIsNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to چنین آگهی ای برای این شخص تعریف نشده است.
+        /// </summary>
+        public static string WrongAdvertise {
+            get {
+                return ResourceManager.GetString("WrongAdvertise", resourceCulture);
             }
         }
     }
