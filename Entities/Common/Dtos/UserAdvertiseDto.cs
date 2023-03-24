@@ -21,7 +21,6 @@ namespace Entities.Common.Dtos
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
         public string Description { get; set; }
-
-
+        public DateTimeOffset CreatedDate { get; set; }
     }
 }

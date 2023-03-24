@@ -31,14 +31,14 @@ namespace Entities.Common.ViewModels
 
         [Required]
         public long PricePerMeter { get; set; }
-        [Required]
-        public long TotalPrice { get; set; }
+        //[Required]
+        //public long TotalPrice { get; set; }
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public bool HasElevator { get; set; }
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
-
+  
 
     }
 

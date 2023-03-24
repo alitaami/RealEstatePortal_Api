@@ -12,7 +12,7 @@ namespace Services.Interfaces
     public interface IAccountService
     {
         public Task<ServiceResult> UserSignUp(UserViewModel user, CancellationToken cancellationToken);
-        public Task<ServiceResult> EstateUserSignUp(EstateUserViewModel user, CancellationToken cancellationToken);
+        public Task<ServiceResult> EstateAgentSignUp(EstateUserViewModel user, CancellationToken cancellationToken);
         public Task<ServiceResult> Login(TokenRequest tokenRequest, CancellationToken cancellationToken);
 
     }

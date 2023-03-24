@@ -24,8 +24,7 @@ namespace EstateAgentApi.Controllers
     /// 
     /// </summary>
     [SwaggerTag("سرویس های احراز هویت")]
-    [ApiController]
-    [Route("api/[controller]/[action]")]
+  
     public class AccountController : APIControllerBase
     {
         private readonly ILogger<AccountController> _logger;
@@ -67,9 +66,10 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<IActionResult> EstateUserSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
+        public async Task<IActionResult> EstateAgentSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
         {
-            var result = await _acc.EstateUserSignUp(user, cancellationToken);
+          
+            var result = await _acc.EstateAgentSignUp(user, cancellationToken);
 
             return Ok(result);
         }

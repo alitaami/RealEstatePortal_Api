@@ -7,6 +7,7 @@ using Entities.Models.User;
 using Entities.ViewModels;
 using EstateAgentApi.Services.Base;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -51,7 +52,7 @@ namespace Services.Interfaces.Services
                     FullName = user.FullName,
                     Age = user.Age,
                     Email = user.Email,
-                    IsActive = false,
+                    IsActive = true,
                     LastLoginDate = DateTimeOffset.Now,
 
                 };
@@ -80,7 +81,7 @@ namespace Services.Interfaces.Services
             }
         }
 
-        public async Task<ServiceResult> EstateUserSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
+        public async Task<ServiceResult> EstateAgentSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
         {
             try
             {
@@ -100,7 +101,7 @@ namespace Services.Interfaces.Services
                     EstateCode = user.EstateCode,
                     Age = user.Age,
                     Email = user.Email,
-                    IsActive = false,
+                    IsActive = true,
                     IsEstateConsultant = true,
                     EstateAddress = user.EstateAddress,
                     EstatePhoneNumber = user.EstatePhoneNumber,
@@ -158,7 +159,6 @@ namespace Services.Interfaces.Services
                 // Generate JWT token
 
                 var token = await _jwtService.Generate(result);
-
 
                 return Ok(token);
             }

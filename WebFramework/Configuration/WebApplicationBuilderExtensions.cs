@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +77,7 @@ namespace WebFramework.Configuration
 
                 AddMvcAndJsonOptions(builder);
 
-                AddMinimalMvc(builder.Services);
+                AddMinimalMvc(builder);
 
                 AddAppServices(builder);
 
@@ -152,7 +153,7 @@ namespace WebFramework.Configuration
 
                 //#region Add UnAuthorized to Response
                 ////Add 401 response and security requirements (Lock icon) to actions that need authorization
-                options.OperationFilter<UnauthorizedResponsesOperationFilter>(true, "Bearer");
+                options.OperationFilter<UnauthorizedResponsesOperationFilter>(false, "Bearer");
                 //#endregion
 
                 #region security for swagger
@@ -306,30 +307,78 @@ namespace WebFramework.Configuration
 
         }
 
-        public static IServiceCollection AddMinimalMvc(this IServiceCollection services)
+        public static void AddMinimalMvc(WebApplicationBuilder builder)
         {
-            services.AddControllers();
-            services.AddMvcCore()
-                    .AddApiExplorer()
-                    .AddFormatterMappings()
-                    .AddDataAnnotations()
-                    .AddJsonOptions(options =>
-                    {
-                        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                        options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-                        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                        options.JsonSerializerOptions.IgnoreNullValues = true;
-                    });
-            return services;
+            //https://github.com/aspnet/AspNetCore/blob/0303c9e90b5b48b309a78c2ec9911db1812e6bf3/src/Mvc/Mvc/src/MvcServiceCollectionExtensions.cs
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add(new AuthorizeFilter()); //Apply AuthorizeFilter as global filter to all actions
+
+                //Like [ValidateAntiforgeryToken] attribute but dose not validatie for GET and HEAD http method
+                //You can ingore validate by using [IgnoreAntiforgeryToken] attribute
+                //Use this filter when use cookie 
+                //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+                //options.UseYeKeModelBinder();
+            }).AddNewtonsoftJson(option =>
+            {
+                option.SerializerSettings.Converters.Add(new StringEnumConverter());
+                option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                //option.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                //option.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            });
+            builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+            #region Old way (We don't need this from ASP.NET Core 3.0 onwards)
+            ////https://github.com/aspnet/Mvc/blob/release/2.2/src/Microsoft.AspNetCore.Mvc/MvcServiceCollectionExtensions.cs
+            //services.AddMvcCore(options =>
+            //{
+            //    options.Filters.Add(new AuthorizeFilter());
+
+            //    //Like [ValidateAntiforgeryToken] attribute but dose not validatie for GET and HEAD http method
+            //    //You can ingore validate by using [IgnoreAntiforgeryToken] attribute
+            //    //Use this filter when use cookie 
+            //    //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+            //    //options.UseYeKeModelBinder();
+            //})
+            //.AddApiExplorer()
+            //.AddAuthorization()
+            //.AddFormatterMappings()
+            //.AddDataAnnotations()
+            //.AddJsonOptions(option =>
+            //{
+            //    //option.JsonSerializerOptions
+            //})
+            //.AddNewtonsoftJson(/*option =>
+            //{
+            //    option.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+            //    option.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            //}*/)
+
+            ////Microsoft.AspNetCore.Mvc.Formatters.Json
+            ////.AddJsonFormatters(/*options =>
+            ////{
+            ////    options.Formatting = Newtonsoft.Json.Formatting.Indented;
+            ////    options.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            ////}*/)
+
+            //.AddCors()
+            //.SetCompatibilityVersion(CompatibilityVersion.Latest); //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            #endregion
         }
 
         public static void AddJwtAuthentication(this IServiceCollection services, JwtSettings jwtSettings)
         {
+     
+          
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+
             }).AddJwtBearer(options =>
             {
                 var secretkey = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
@@ -399,8 +448,9 @@ namespace WebFramework.Configuration
                         //if (validatedUser == null)
                         //    context.Fail("Token secuirty stamp is not valid.");
 
-                        if (!user.IsActive)
-                            context.Fail("User is not active.");
+                        //if (!user.IsActive)
+                        //    context.Fail("User is not active.");
+                        //throw new UnauthorizedAccessException("User is not active.");
 
                         //await userService.UpdateLastLoginDateAsync(userId, context.HttpContext.RequestAborted);
                     },

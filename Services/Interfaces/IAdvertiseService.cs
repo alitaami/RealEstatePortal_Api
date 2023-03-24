@@ -10,7 +10,11 @@ namespace Services.Interfaces
 {
     public interface IAdvertiseService
     {
-        public Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = ""  );
+        public Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "");
         public Task<ServiceResult> GetAdveriseForShow(int advertiseId);
+        public Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModel ua, int userId, CancellationToken cancellationToken);
+        public Task<ServiceResult> GetAllAdvertisesOfAgent(int pageId = 1, string advertiseText = "", string homeAddress = "", int userId=0);
+        public Task<ServiceResult> UpdateAdvertiseOfAgent(int advertiseId, UserAdvertiseViewModel ua, CancellationToken cancellationToken);
+
     }
 }

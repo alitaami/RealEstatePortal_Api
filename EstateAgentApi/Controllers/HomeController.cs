@@ -14,8 +14,6 @@ using Entities.Common.Dtos;
 namespace EstateAgentApi.Controllers
 {
     [SwaggerTag("سرویس های صفحه اصلی")]
-    [ApiController]
-    [Route("api/[controller]/[action]")]
     public class HomeController : APIControllerBase
     {
         private readonly ILogger<HomeController> _logger;

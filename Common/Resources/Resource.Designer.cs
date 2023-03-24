@@ -61,6 +61,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to آگهی ای با این نام موجود است.
+        /// </summary>
+        public static string AdExists {
+            get {
+                return ResourceManager.GetString("AdExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to آگهی ای یافت نشد.
         /// </summary>
         public static string AdveriseNotFound {
