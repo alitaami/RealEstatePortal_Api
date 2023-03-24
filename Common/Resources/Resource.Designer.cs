@@ -160,6 +160,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to رمز عبور قبلی نادرست است.
+        /// </summary>
+        public static string PasswordDoesntMatch {
+            get {
+                return ResourceManager.GetString("PasswordDoesntMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to رمز عبور نباید کمتر از 8 حرف باشد.
         /// </summary>
         public static string PasswordMin {
@@ -237,6 +246,15 @@ namespace Common.Resources {
         public static string UserIsNotActive {
             get {
                 return ResourceManager.GetString("UserIsNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to چنین آگهی ای برای این شخص تعریف نشده است.
+        /// </summary>
+        public static string WrongAdvertise {
+            get {
+                return ResourceManager.GetString("WrongAdvertise", resourceCulture);
             }
         }
     }

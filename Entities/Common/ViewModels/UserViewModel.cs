@@ -35,7 +35,7 @@ namespace Entities.Common.ViewModels
         public DateTimeOffset? LastLoginDate { get; set; }
 
     }
-    public class EstateUserViewModel  
+    public class EstateUserViewModel
     {
         [Required]
         [StringLength(100)]
@@ -73,8 +73,51 @@ namespace Entities.Common.ViewModels
         [StringLength(10)]
         public string EstateCode { get; set; }
         public DateTimeOffset? LastLoginDate { get; set; }
-       
+
+    }
+    public class UserPanelViewModel
+    {
+        public string? OldPassword { get; set; }
+
+        public string? NewPassword { get; set; }
+
+        [Compare(nameof(NewPassword))]
+        public string? RePassword { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string FullName { get; set; }
+
+        [Required]
+        public int Age { get; set; }
+
     }
 
-   
+    public class EstateAgentPanelViewModel
+    {
+
+        public string? OldPassword { get; set; }
+
+        public string? NewPassword { get; set; }
+
+        [Compare(nameof(NewPassword))]
+        public string? RePassword { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string FullName { get; set; }
+
+        [Required]
+        public int Age { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string EstateAddress { get; set; }
+        [Required]
+        [StringLength(11)]
+        public string EstatePhoneNumber { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string EstateCode { get; set; }
+    }
 }

@@ -150,6 +150,9 @@
   <data name="NotFound" xml:space="preserve">
     <value>یافت نشد</value>
   </data>
+  <data name="PasswordDoesntMatch" xml:space="preserve">
+    <value>رمز عبور قبلی نادرست است</value>
+  </data>
   <data name="PasswordMin" xml:space="preserve">
     <value>رمز عبور نباید کمتر از 8 حرف باشد</value>
   </data>
@@ -176,5 +179,8 @@
   </data>
   <data name="UserIsNotActive" xml:space="preserve">
     <value>حساب کاربری فعال نیست</value>
+  </data>
+  <data name="WrongAdvertise" xml:space="preserve">
+    <value>چنین آگهی ای برای این شخص تعریف نشده است</value>
   </data>
 </root>

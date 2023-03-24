@@ -42,7 +42,7 @@ namespace EstateAgentApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// SignUp for Users
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -59,6 +59,13 @@ namespace EstateAgentApi.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        /// SignUp for Estates By EstateAgent
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ثبت نام املاک")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -75,7 +82,7 @@ namespace EstateAgentApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// login with username and password
         /// </summary>
         /// <param name="tokenRequest"></param>
         /// <param name="cancellationToken"></param>

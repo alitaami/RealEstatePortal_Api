@@ -25,7 +25,13 @@ namespace EstateAgentApi.Controllers
             _Ad = ad;
 
         }
-
+        /// <summary>
+        /// Get advertise by searching and pagination
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="advertiseText"></param>
+        /// <param name="homeAddress"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -40,6 +46,11 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
         }
         
+        /// <summary>
+        /// Get advertise detail by advertiseId
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("آگهی")]
         [Consumes(MediaTypeNames.Application.Json)]

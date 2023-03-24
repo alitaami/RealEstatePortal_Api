@@ -40,6 +40,7 @@ namespace Entities.Models.User
         public bool HasElevator { get; set; }
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
+        public bool IsDelete { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }
 

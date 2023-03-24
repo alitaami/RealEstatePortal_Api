@@ -1,4 +1,5 @@
 ﻿using Common.Resources;
+using Common.Utilities;
 using Data;
 using Data.Repositories;
 using Entities.Base;
@@ -34,7 +35,110 @@ namespace Services.Interfaces.Services
             _repoR = repoR;
             _repoAd = repoAd;
         }
-        #region EatateAgent
+
+
+        #region EatateAgent Panel
+
+        public async Task<ServiceResult> GetEstateAgentInfo(int userId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                ValidateModel(userId);
+
+                var u = await _repo.TableNoTracking
+                      .Where(u => u.Id == userId)
+                      .FirstOrDefaultAsync();
+
+                if (u == null)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
+
+                var user = new EstateAgentDto
+                {
+                    UserName = u.UserName,
+                    Email = u.Email,
+                    Age = u.Age,
+                    PhoneNumber = u.PhoneNumber,
+                    FullName = u.FullName,
+                    EstateAddress = u.EstateAddress,
+                    EstatePhoneNumber = u.EstatePhoneNumber,
+                    EstateCode = u.EstateCode,
+                    LastLoginDate = u.LastLoginDate
+
+                };
+
+                return Ok(user);
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+
+        }
+
+        public async Task<ServiceResult> UpdateEstateAgentInfo(int userId, EstateAgentPanelViewModel user, CancellationToken cancellationToken)
+        {
+            try
+            {
+                ValidateModel(user);
+
+                var u = await _repo.GetByIdAsync(cancellationToken, userId);
+
+                if (u is null)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
+
+                if (user.OldPassword == "" || user.NewPassword == "" || user.RePassword == "")
+                {
+                    u.Age = user.Age;
+                    u.EstateAddress = user.EstateAddress;
+                    u.EstateCode = user.EstateCode;
+                    u.EstatePhoneNumber = user.EstatePhoneNumber;
+                    u.FullName = user.FullName;
+                }
+
+                else
+                {
+                    var hashOld = SecurityHelper.GetSha256Hash(user.OldPassword);
+                    var hashNewPass = SecurityHelper.GetSha256Hash(user.NewPassword);
+
+                    if (hashOld != u.PasswordHash)
+                        return BadRequest(ErrorCodeEnum.BadRequest, Resource.PasswordDoesntMatch, null);///
+
+                    else
+                    {
+                        if (user.NewPassword == "")
+                            return BadRequest(ErrorCodeEnum.BadRequest, Resource.EnterParametersCorrectlyAndCompletely, null);///
+
+                        u.PasswordHash = hashNewPass;
+                        u.Age = user.Age;
+                        u.EstateAddress = user.EstateAddress;
+                        u.EstateCode = user.EstateCode;
+                        u.EstatePhoneNumber = user.EstatePhoneNumber;
+                        u.FullName = user.FullName;
+                    }
+
+                }
+
+                _repo.Update(u);
+
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+
+        #endregion
+
+        #region EatateAgent Advertises
         public async Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModel ua, int userId, CancellationToken cancellationToken)
         {
             try
@@ -44,10 +148,13 @@ namespace Services.Interfaces.Services
                 UserAdvertises u = new UserAdvertises();
 
                 var ud = await _repoAd.TableNoTracking
-                       .FirstOrDefaultAsync(u => u.AdvertiseText == ua.AdvertiseText);
+                       .Where(u => u.AdvertiseText == ua.AdvertiseText)
+                       .FirstOrDefaultAsync();
 
                 if (ud != null)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AdExists, null);///
+
+                //var EstateAgent = await _repo.GetByIdAsync(cancellationToken, userId);
 
                 u.UserId = userId;
                 u.AdvertiseText = ua.AdvertiseText;
@@ -102,7 +209,9 @@ namespace Services.Interfaces.Services
                 if (userId == 0)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
 
-                IQueryable<UserAdvertises> result = _repoAd.Entities.Where(u => u.UserId == userId);
+                IQueryable<UserAdvertises> result = _repoAd
+                    .TableNoTracking
+                    .Where(u => u.UserId == userId && !u.IsDelete);
 
 
                 if (result is null)
@@ -170,14 +279,21 @@ namespace Services.Interfaces.Services
             }
         }
 
-        public async Task<ServiceResult> UpdateAdvertiseOfAgent(int advertiseId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
+        public async Task<ServiceResult> UpdateAdvertiseOfAgent(int advertiseId, int userId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
         {
             try
             {
                 var uAd = await _repoAd.GetByIdAsync(cancellationToken, advertiseId);
 
+
                 if (uAd is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (uAd.IsDelete)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                if (uAd.UserId != userId)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
 
                 uAd.AdvertiserName = ua.AdvertiserName;
                 uAd.AdvertiserNumber = ua.AdvertiserNumber;
@@ -221,6 +337,34 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+        public async Task<ServiceResult> DeleteAdvertiseOfAgent(int advertiseId, int userId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var uAd = await _repoAd.GetByIdAsync(cancellationToken, advertiseId);
+
+                if (uAd is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (uAd.IsDelete)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                if (uAd.UserId != userId)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                uAd.IsDelete = true;
+
+                _repoAd.Update(uAd);
+
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
         #endregion
 
         #region public
@@ -229,7 +373,8 @@ namespace Services.Interfaces.Services
             try
             {
                 var ua = await _repoAd.TableNoTracking
-                .FirstOrDefaultAsync(u => u.Id == advertiseId);
+                .Where(u => u.Id == advertiseId && !u.IsDelete)
+                .FirstOrDefaultAsync();
 
                 if (ua == null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
@@ -267,7 +412,7 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                IQueryable<UserAdvertises> result = _repoAd.Entities;
+                IQueryable<UserAdvertises> result = _repoAd.Entities.Where(u => !u.IsDelete);
 
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
@@ -317,6 +462,7 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+
 
 
         #endregion
