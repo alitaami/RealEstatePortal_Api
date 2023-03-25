@@ -22,7 +22,7 @@ namespace WebApiCourse.Controllers.v1
     /// 
     /// </summary>
     [SwaggerTag("لیست سرویسهای  کاربر")]
-    [Authorize(Roles = "2")]
+    [Authorize]
     public class UserController : APIControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -78,6 +78,122 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
+
+        /// <summary>
+        /// Section for update Agent info in EstateAgent panel
+        /// </summary>
+        /// <param name="ua"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [SwaggerOperation("آپدیت ادمین املاک")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> UpdateEsteAgentInfo(EstateAgentPanelViewModel ua, CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UpdateEstateAgentInfo(userId.ToInt(), ua, cancellationToken);
+
+            return APIResponse(result);
+        }
+
+
+        /// <summary>
+        ///  Creating advertises by EstateAgent
+        /// </summary>
+        /// <param name="ad"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SwaggerOperation("ایجاد آگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> CreateAdvertise(UserAdvertiseViewModel ad, CancellationToken cancellationToken)
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.CreateAdvertise(ad, userId.ToInt(), cancellationToken);
+
+            return APIResponse(result);
+        }
+
+        /// <summary>
+        /// Get advertises of own Estate
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="advertiseText"></param>
+        /// <param name="homeAddress"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [SwaggerOperation("لیست اگهی های املاک")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> GetAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.GetAllAdvertisesOfUser(pageId, advertiseText, homeAddress,orderBy,saleType ,startprice , endprice, startrentprice , endrentprice , userId.ToInt());
+
+            return APIResponse(result);
+        }
+        /// <summary>
+        /// Update advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <param name="ua"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [SwaggerOperation("آپدیت آگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> UpdateAdvertiseOfUser(int advertiseId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UpdateAdvertiseOfUser(advertiseId, userId.ToInt(), ua, cancellationToken);
+
+            return APIResponse(result);
+        }
+
+        /// <summary>
+        /// Delete advertise (** IsDelete == True **)
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [SwaggerOperation("حذف آگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> DeleteAdvertiseOfUser(int advertiseId, CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.DeleteAdvertiseOfUser(advertiseId, userId.ToInt(), cancellationToken);
+
+            return APIResponse(result);
+        }
+ 
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Entities.Common;
+using Entities.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,20 +29,28 @@ namespace Entities.Models.User
         public string HomeAddress { get; set; }
         [Required]
         public int RoomCount { get; set; }
-        [Required]
+
+        public bool ForSale { get; set; }
+
         public long Meterage { get; set; }
 
+        public long? PricePerMeter { get; set; }
+        
+        public long? TotalPrice { get; set; }
+
+        public long? DespositPrice { get; set; }
+        public long? RentPrice { get; set; }
+
         [Required]
-        public long PricePerMeter { get; set; }
-        [Required]
-        public long TotalPrice { get; set; }
+        public BuildingTypeEnum BuildingType { get; set; }
+  
         [StringLength(500)]
         public string Description { get; set; }
+        public bool HasGarage { get; set; }
         public bool HasElevator { get; set; }
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
         public bool IsDelete { get; set; }
-
         public DateTimeOffset CreatedDate { get; set; }
 
         #region relations

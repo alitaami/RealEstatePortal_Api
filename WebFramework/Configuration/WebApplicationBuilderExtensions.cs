@@ -110,7 +110,7 @@ namespace WebFramework.Configuration
         {
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Data Source =.; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
+                options.UseSqlServer("Data Source =DESKTOP-HUHDHF7; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
         }
 
@@ -284,7 +284,7 @@ namespace WebFramework.Configuration
         private static void AddMvcAndJsonOptions(WebApplicationBuilder builder)
         {
             builder.Services
-                             .AddControllers()
+                             .AddControllers()        
                              .AddJsonOptions(options =>
                              {
                                  options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
