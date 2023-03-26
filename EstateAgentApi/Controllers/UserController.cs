@@ -192,7 +192,22 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
- 
+
+        [HttpPost]
+        [SwaggerOperation("افزودن روزهای بازدید حضوری")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.CreateAdvertiseAvailableVisitDays(SelectedDays,advertiseId, userId.ToInt());
+
+            return APIResponse(result);
+        }
 
 
     }

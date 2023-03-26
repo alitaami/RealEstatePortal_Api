@@ -52,12 +52,15 @@ namespace Entities.Models.User
         public bool HasWarehouse { get; set; }
         public bool IsDelete { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
+        public bool IsConfirm { get; set; }
+
 
         #region relations
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 
+        public List<AdvertiseAvailableVisitDays>  AdvertiseAvailableVisitDays { get; set; }
 
         #endregion
 

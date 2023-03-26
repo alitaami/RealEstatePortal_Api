@@ -132,6 +132,9 @@
   <data name="AlreadyExists2" xml:space="preserve">
     <value>تلفن همراه ، نام کاربری و یا کد املاک تکراریست!</value>
   </data>
+  <data name="DaysExists" xml:space="preserve">
+    <value>این روز برای آگهی شما ثبت شده است</value>
+  </data>
   <data name="EnterParametersCorrectlyAndCompletely" xml:space="preserve">
     <value>پارامترهای ارسالی را کامل و صحیح وارد کنید.</value>
   </data>

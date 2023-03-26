@@ -24,14 +24,16 @@ namespace Services.Interfaces.Services
         private IRepository<UserRoles> _repoUR;
         private IRepository<Role> _repoR;
         private IRepository<UserAdvertises> _repoAd;
+        private IRepository<AdvertiseAvailableVisitDays> _repoAv;
         private readonly IJwtService _jwtService;
-        public UserService(ILogger<UserService> logger, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<Role> repoR) : base(logger)
+        public UserService(ILogger<UserService> logger, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
         {
             _repo = repository;
             _repoUR = repoUR;
             _repoR = repoR;
             _jwtService = jwtService;
             _repoAd = repoad;
+            _repoAv = repoav;
         }
 
         #region User Panel
@@ -252,6 +254,7 @@ namespace Services.Interfaces.Services
                     u.HasGarage = ua.HasGarage;
                     u.Description = ua.Description;
                     u.CreatedDate = DateTimeOffset.Now;
+                    u.IsConfirm = false;
                 }
                 else
                 {
@@ -273,6 +276,7 @@ namespace Services.Interfaces.Services
                     u.HasGarage = ua.HasGarage;
                     u.Description = ua.Description;
                     u.CreatedDate = DateTimeOffset.Now;
+                    u.IsConfirm = false;
                 }
 
                 await _repoAd.AddAsync(u, cancellationToken);
@@ -297,6 +301,7 @@ namespace Services.Interfaces.Services
                         HasGarage = ua.HasGarage,
                         Description = ua.Description,
                         CreatedDate = u.CreatedDate
+
                     };
 
                     return Ok(result);
@@ -344,7 +349,7 @@ namespace Services.Interfaces.Services
 
                 IQueryable<UserAdvertises> result = _repoAd
                     .TableNoTracking
-                    .Where(u => u.UserId == userId && !u.IsDelete);
+                    .Where(u => u.UserId == userId && !u.IsDelete && u.IsConfirm);
 
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
@@ -453,7 +458,7 @@ namespace Services.Interfaces.Services
                 if (uAd is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
-                if (uAd.IsDelete)
+                if (uAd.IsDelete && !uAd.IsConfirm)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
 
                 if (uAd.UserId != userId)
@@ -566,7 +571,7 @@ namespace Services.Interfaces.Services
                 if (uAd is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
-                if (uAd.IsDelete)
+                if (uAd.IsDelete && !uAd.IsConfirm)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
 
                 if (uAd.UserId != userId)
@@ -585,6 +590,44 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+
+        public async Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId)
+        {
+            try
+            {
+                ValidateModel(SelectedDays);
+
+                var result = _repoAd
+                                .TableNoTracking
+                                .Where(u => u.UserId == userId && !u.IsDelete && u.IsConfirm && u.Id == advertiseId).FirstOrDefault();
+               
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
+
+                foreach (var p in SelectedDays)
+                {
+                    var check = _repoAv.TableNoTracking.Where(u => u.DayOfWeek == (Entities.Common.Enums.DaysOfWeek)p && u.AdvertiseId == advertiseId);
+
+                    if (check!=null)
+                        return BadRequest(ErrorCodeEnum.BadRequest, Resource.DaysExists, null);///
+
+                    _repoAv.Add(new AdvertiseAvailableVisitDays
+                    {
+                        DayOfWeek = (Entities.Common.Enums.DaysOfWeek)p,
+                        AdvertiseId = advertiseId
+                    });
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+
         #endregion
 
     }

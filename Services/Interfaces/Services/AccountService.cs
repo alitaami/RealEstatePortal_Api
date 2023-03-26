@@ -52,15 +52,15 @@ namespace Services.Interfaces.Services
                     FullName = user.FullName,
                     Age = user.Age,
                     Email = user.Email,
-                    IsActive = true,
+                    IsActive = false,
                     LastLoginDate = DateTimeOffset.Now,
-
+                    
                 };
 
                 await _repo.AddAsync(u, cancellationToken);
   
                 // Role for user
-
+                //ToDo remove this   admin will give role
                 var uR = new UserRoles
                     {
                         UserId = u.Id,
@@ -112,8 +112,10 @@ namespace Services.Interfaces.Services
                 await _repo.AddAsync(u, cancellationToken);
 
                 // Role for Estate member
-               
-                    var uR = new UserRoles
+                // Role for user
+                //ToDo remove this   admin will give role
+
+                var uR = new UserRoles
                     {
                         UserId = u.Id,
                         RoleId = 1

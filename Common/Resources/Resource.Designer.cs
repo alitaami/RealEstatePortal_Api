@@ -106,6 +106,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to این روز برای آگهی شما ثبت شده است.
+        /// </summary>
+        public static string DaysExists {
+            get {
+                return ResourceManager.GetString("DaysExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to پارامترهای ارسالی را کامل و صحیح وارد کنید..
         /// </summary>
         public static string EnterParametersCorrectlyAndCompletely {

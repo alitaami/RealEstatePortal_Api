@@ -60,7 +60,10 @@ namespace Entities.Common.ViewModels
         public long? Price { get; set; }
         public long? DespositPrice { get; set; }
         public long? RentPrice { get; set; }
-     
+
 
     }
+
+   
+
 }

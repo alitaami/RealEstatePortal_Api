@@ -43,7 +43,7 @@ namespace Services.Interfaces.Services
             try
             {
                 var ua = await _repoAd.TableNoTracking
-                .Where(u => u.Id == advertiseId && !u.IsDelete)
+                .Where(u => u.Id == advertiseId && !u.IsDelete && u.IsConfirm)
                 .FirstOrDefaultAsync();
 
                 if (ua == null)
@@ -118,7 +118,7 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                IQueryable<UserAdvertises> result = _repoAd.Table.Where(u => !u.IsDelete);
+                IQueryable<UserAdvertises> result = _repoAd.Table.Where(u => !u.IsDelete && u.IsConfirm);
 
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
