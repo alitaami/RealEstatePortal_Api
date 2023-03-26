@@ -27,8 +27,9 @@ namespace Services.Interfaces.Services
         private IRepository<Role> _repoR;
         private IRepository<UserAdvertises> _repoAd;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
+        private IRepository<AdvertiseVisitRequests> _repoReq;
         private readonly IJwtService _jwtService;
-        public UserService(ILogger<UserService> logger, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
+        public UserService(ILogger<UserService> logger, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
         {
             _repo = repository;
             _repoUR = repoUR;
@@ -36,6 +37,7 @@ namespace Services.Interfaces.Services
             _jwtService = jwtService;
             _repoAd = repoad;
             _repoAv = repoav;
+            _repoReq = repoReq;
         }
 
         #region User Panel
@@ -465,10 +467,7 @@ namespace Services.Interfaces.Services
                 if (uAd is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
-                if (uAd.IsDelete && !uAd.IsConfirm)
-                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
-
-                if (uAd.UserId != userId)
+                if (uAd.IsDelete && !uAd.IsConfirm && uAd.UserId != userId)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
 
                 if (ua.ForSale)
@@ -597,7 +596,6 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-
         public async Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId)
         {
             try
@@ -622,7 +620,7 @@ namespace Services.Interfaces.Services
                     {
                         DayOfWeek = (Entities.Common.Enums.DaysOfWeek)p,
                         AdvertiseId = advertiseId,
-                        
+
                     });
                 }
                 return Ok();
@@ -673,7 +671,133 @@ namespace Services.Interfaces.Services
                     .Where(u => u.AdvertiseId == advertiseId)
                     .ToList();
 
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> AdvertiserGetRequestsForVisit(int advertiseId, int userId)
+        {
+            try
+            {
+                ValidateModel(advertiseId);
+
+                if (!CheckUserHasThisAdvertise(advertiseId, userId))
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                var result = _repoReq.TableNoTracking
+                    .Where(u => u.AdvertiseId == advertiseId && u.UserIdOfUser != userId && !u.IsDelete)
+                      .ToList();
+
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> AdvertiserConfirmRequestsForVisit(int reqId, int userId)
+        {
+            try
+            {
+                ValidateModel(reqId);
+
+                var result = await _repoReq.Entities
+                    .Where(u => u.Id == reqId && u.UserIdOfUser != userId)
+                    .FirstOrDefaultAsync();
+
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (result.IsConfirm == true)
+                    result.IsConfirm = false;
+
+                else if (result.IsConfirm == false)
+                    result.IsConfirm = true;
+
+                _repoReq.Update(result);
+
+                var res = new AdvertiseVisitRequestsDto
+                {
+                    AdvertiseId = result.AdvertiseId,
+                    FullNameOfUser = result.FullNameOfUser,
+                    DayOfWeek = result.DayOfWeek,
+                    IsConfirm = result.IsConfirm,
+                };
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
+        public async Task<ServiceResult> UserRequestsForVisit(int userId)
+        {
+            try
+            {
+                ValidateModel(userId);
+
+                var result = _repoReq.TableNoTracking
+                    .Where(u => u.UserIdOfUser == userId && !u.IsDelete)
+                    .ToList();
+
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> UserDeleteRequestsForVisit(int reqId, int userId)
+        {
+            try
+            {
+                ValidateModel(userId);
+
+                var result = await _repoReq.TableNoTracking
+                    .Where(u => u.UserIdOfUser == userId && !u.IsDelete && u.Id == reqId)
+                      .FirstOrDefaultAsync();
+
+                if (result is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                result.IsDelete = true;
+
+                _repoReq.Update(result);
+
+                //var res = new AdvertiseVisitRequestsDto
+                //{
+                //    AdvertiseId = result.AdvertiseId,
+                //    FullNameOfUser = result.FullNameOfUser,
+                //    DayOfWeek = result.DayOfWeek,
+                //    IsConfirm = result.IsConfirm,
+                //};
+
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -703,6 +827,9 @@ namespace Services.Interfaces.Services
                 return false;
         }
 
+
+
         #endregion
+
     }
 }

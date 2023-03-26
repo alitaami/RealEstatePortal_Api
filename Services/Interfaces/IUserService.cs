@@ -21,7 +21,10 @@ namespace Services.Interfaces
         public Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
         public Task<ServiceResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
         public Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId, int userId);
-
+        public Task<ServiceResult> AdvertiserGetRequestsForVisit(int advertiseId, int userId);
+        public Task<ServiceResult> AdvertiserConfirmRequestsForVisit(int reqId, int userId);
+        public Task<ServiceResult> UserRequestsForVisit(int userId);
+        public Task<ServiceResult> UserDeleteRequestsForVisit(int reqId, int userId);
 
         #region Mostly repeated codes
         public bool CheckUserHasThisAdvertise(int advertiseId, int userId);

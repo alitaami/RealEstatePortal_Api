@@ -6,21 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Common.ViewModels
+namespace Entities.Common.Dtos
 {
-    public class RequestForAdvertiseVisitViewModel
+    public class AdvertiseVisitRequestsDto
     {
         [Required]
         public int AdvertiseId { get; set; }
-
-        [Required]
-        public int UserIdOfUser { get; set; }
-
+ 
         [Required]
         public string FullNameOfUser { get; set; }
 
         [Required]
         public DaysOfWeek DayOfWeek { get; set; }
-
+        public bool IsConfirm { get; set; }
+         
     }
 }

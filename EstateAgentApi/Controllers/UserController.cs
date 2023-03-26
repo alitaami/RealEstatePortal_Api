@@ -15,6 +15,7 @@ using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
+using Entities.Models.User.Advertises;
 
 namespace WebApiCourse.Controllers.v1
 {
@@ -125,19 +126,19 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="pageId"></param>
-  /// <param name="advertiseText"></param>
-  /// <param name="homeAddress"></param>
-  /// <param name="orderBy"></param>
-  /// <param name="saleType"></param>
-  /// <param name="startprice"></param>
-  /// <param name="endprice"></param>
-  /// <param name="startrentprice"></param>
-  /// <param name="endrentprice"></param>
-  /// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="advertiseText"></param>
+        /// <param name="homeAddress"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="saleType"></param>
+        /// <param name="startprice"></param>
+        /// <param name="endprice"></param>
+        /// <param name="startrentprice"></param>
+        /// <param name="endrentprice"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست اگهی های کاربر")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -153,7 +154,7 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-     
+
         /// <summary>
         /// Update advertise
         /// </summary>
@@ -247,6 +248,68 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
-        
+        [HttpGet]
+        [SwaggerOperation("دریافت درخواست های بازدید حضوری")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> AdvertiserGetRequestsForVisit(int advertiseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.AdvertiserGetRequestsForVisit(advertiseId, userId.ToInt());
+
+            return APIResponse(result);
+        }
+
+        [HttpPut]
+        [SwaggerOperation("تایید یا عدم تایید درخواست ها")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> AdvertiserConfirmRequestsForVisit(int reqId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.AdvertiserConfirmRequestsForVisit(reqId, userId.ToInt());
+
+            return APIResponse(result);
+        }
+
+        [HttpGet]
+        [SwaggerOperation("درخواست های ارسال شده")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> UserRequestsForVisit()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UserRequestsForVisit( userId.ToInt());
+
+            return APIResponse(result);
+        }
+
+        [HttpPut]
+        [SwaggerOperation("تایید یا عدم تایید درخواست ها")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> UserDeleteRequestsForVisit(int reqId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UserDeleteRequestsForVisit(reqId, userId.ToInt());
+
+            return APIResponse(result);
+        }
     }
 }

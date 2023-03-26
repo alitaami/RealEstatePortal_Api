@@ -268,6 +268,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ایجاد کننده آگهی نمیتواند برای آگهی خود درخواست بازدید بفرستد.
+        /// </summary>
+        public static string UserRequestError {
+            get {
+                return ResourceManager.GetString("UserRequestError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to چنین آگهی ای برای این شخص تعریف نشده است.
         /// </summary>
         public static string WrongAdvertise {

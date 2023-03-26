@@ -186,6 +186,9 @@
   <data name="UserIsNotActive" xml:space="preserve">
     <value>حساب کاربری فعال نیست</value>
   </data>
+  <data name="UserRequestError" xml:space="preserve">
+    <value>ایجاد کننده آگهی نمیتواند برای آگهی خود درخواست بازدید بفرستد</value>
+  </data>
   <data name="WrongAdvertise" xml:space="preserve">
     <value>چنین آگهی ای برای این شخص تعریف نشده است</value>
   </data>

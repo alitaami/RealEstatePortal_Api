@@ -4,6 +4,7 @@ using Data;
 using Data.Repositories;
 using Entities.Base;
 using Entities.Common.Dtos;
+using Entities.Common.Enums;
 using Entities.Common.ViewModels;
 using Entities.Models.User;
 using Entities.Models.User.Advertises;
@@ -29,10 +30,11 @@ namespace Services.Interfaces.Services
         private IRepository<UserRoles> _repoUR;
         private IRepository<Role> _repoR;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
-        private IRepository<RequestForAdvertiseVisitViewModel> _repoReq;
+        private IRepository<AdvertiseVisitRequests> _repoReq;
         ILogger<AdvertiseService> _logger;
         //private readonly IJwtService _jwtService;
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<RequestForAdvertiseVisitViewModel> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+
+        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
@@ -173,7 +175,7 @@ namespace Services.Interfaces.Services
 
                     case "sale":
                         {
-                            if (startprice >= 0 && endprice  >= 0 && endprice > startprice)
+                            if (startprice >= 0 && endprice >= 0 && endprice > startprice)
                             {
                                 result = result.Where(c => c.TotalPrice >= startprice && c.TotalPrice <= endprice && c.ForSale);
                             }
@@ -234,7 +236,7 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(advertiseId);
 
-                 
+
                 var result = _repoAv.TableNoTracking
                     .Where(u => u.AdvertiseId == advertiseId)
                     .ToList();
@@ -250,26 +252,36 @@ namespace Services.Interfaces.Services
             }
         }
 
-        public async Task<ServiceResult> RequestForAdvertiseVisit(RequestForAdvertiseVisitViewModel request)
+        public async Task<ServiceResult> RequestForAdvertiseVisit(int dayOfWeek, int advertiseId, int userId, string fullName)
         {
             try
             {
-                ValidateModel(request);
-
+                ValidateModel(advertiseId);
 
                 var result = _repoAv.TableNoTracking
-                    .Any(u => u.AdvertiseId == request.AdvertiseId && u.DayOfWeek == request.DayOfWeek);
+                    .Any(u => u.AdvertiseId == advertiseId && u.DayOfWeek == (DaysOfWeek)dayOfWeek);
+
+                if (!result)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
+
+                var userCheck = _repoAd.TableNoTracking.Any(u => u.Id == advertiseId && u.UserId == userId);
+
+                if (userCheck)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.UserRequestError, null);///
 
                 var req = new AdvertiseVisitRequests
                 {
-                    AdvertiseId= request.AdvertiseId,
-                    DayOfWeek = request.DayOfWeek,
-                   
-
-
+                    AdvertiseId = advertiseId,
+                    DayOfWeek = (DaysOfWeek)dayOfWeek,
+                    FullNameOfUser = fullName,
+                    UserIdOfUser = userId,
+                    IsConfirm = false,
+                    IsDelete = false
                 };
 
-                return Ok(result);
+                _repoReq.Add(req);
+
+                return Ok(req);
             }
             catch (Exception ex)
             {

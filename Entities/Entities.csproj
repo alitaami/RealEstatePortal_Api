@@ -33,8 +33,4 @@
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\Dtos\" />
-  </ItemGroup>
-
 </Project>
