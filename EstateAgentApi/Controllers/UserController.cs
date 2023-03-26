@@ -32,7 +32,7 @@ namespace WebApiCourse.Controllers.v1
         public UserController(ILogger<UserController> logger, IRepository<User> repo, IUserService user)
         {
             _logger = logger;
-            _user =   user;
+            _user = user;
             _repo = repo;
         }
 
@@ -125,29 +125,35 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
-        /// <summary>
-        /// Get advertises of own Estate
-        /// </summary>
-        /// <param name="pageId"></param>
-        /// <param name="advertiseText"></param>
-        /// <param name="homeAddress"></param>
-        /// <returns></returns>
-
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="pageId"></param>
+  /// <param name="advertiseText"></param>
+  /// <param name="homeAddress"></param>
+  /// <param name="orderBy"></param>
+  /// <param name="saleType"></param>
+  /// <param name="startprice"></param>
+  /// <param name="endprice"></param>
+  /// <param name="startrentprice"></param>
+  /// <param name="endrentprice"></param>
+  /// <returns></returns>
         [HttpGet]
-        [SwaggerOperation("لیست اگهی های املاک")]
+        [SwaggerOperation("لیست اگهی های کاربر")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
 
-        public async Task<IActionResult> GetAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
+        public async Task<IActionResult> GetAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _user.GetAllAdvertisesOfUser(pageId, advertiseText, homeAddress,orderBy,saleType ,startprice , endprice, startrentprice , endrentprice , userId.ToInt());
+            var result = await _user.GetAllAdvertisesOfUser(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice, userId.ToInt());
 
             return APIResponse(result);
         }
+     
         /// <summary>
         /// Update advertise
         /// </summary>
@@ -193,6 +199,22 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+        [HttpGet]
+        [SwaggerOperation("دریافت روزهای بازدید حضوری")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+
+        public async Task<IActionResult> GetAdvertiseAvailableVisitDays(int advertiseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.GetAdvertiseAvailableVisitDays(advertiseId, userId.ToInt());
+
+            return APIResponse(result);
+        }
+
         [HttpPost]
         [SwaggerOperation("افزودن روزهای بازدید حضوری")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -204,11 +226,27 @@ namespace WebApiCourse.Controllers.v1
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _user.CreateAdvertiseAvailableVisitDays(SelectedDays,advertiseId, userId.ToInt());
+            var result = await _user.CreateAdvertiseAvailableVisitDays(SelectedDays, advertiseId, userId.ToInt());
 
             return APIResponse(result);
         }
 
+        [HttpPut]
+        [SwaggerOperation("ویرایش روزهای بازدید حضوری")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
 
+        public async Task<IActionResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UpdateAdvertiseAvailableVisitDays(SelectedDays, advertiseId, userId.ToInt());
+
+            return APIResponse(result);
+        }
+
+        
     }
 }

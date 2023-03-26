@@ -123,6 +123,9 @@
   <data name="AdveriseNotFound" xml:space="preserve">
     <value>آگهی ای یافت نشد</value>
   </data>
+  <data name="AdvertiseDayNotMatch" xml:space="preserve">
+    <value>برای بازدید از این ملک چنین روزی تعیین نشده است </value>
+  </data>
   <data name="AgeError" xml:space="preserve">
     <value>سن نباید کمتر از 18 باشد</value>
   </data>
@@ -185,5 +188,8 @@
   </data>
   <data name="WrongAdvertise" xml:space="preserve">
     <value>چنین آگهی ای برای این شخص تعریف نشده است</value>
+  </data>
+  <data name="WrongDaySelected" xml:space="preserve">
+    <value>روز های هفته باید شامل شنبه تا جمعه باشند</value>
   </data>
 </root>

@@ -7,15 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User
+namespace Entities.Models.User.Roles
 {
-    public class UserRoles:BaseEntity
+    public class UserRoles : BaseEntity
     {
         public UserRoles()
         {
 
         }
-       
+
         public int UserId { get; set; }
         public int RoleId { get; set; }
 
@@ -23,7 +23,7 @@ namespace Entities.Models.User
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-        
+
         [ForeignKey(nameof(RoleId))]
         public virtual Role Role { get; set; }
         #endregion

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User
+namespace Entities.Models.User.Advertises
 {
     public class UserAdvertises : BaseEntity
     {
@@ -35,7 +35,7 @@ namespace Entities.Models.User
         public long Meterage { get; set; }
 
         public long? PricePerMeter { get; set; }
-        
+
         public long? TotalPrice { get; set; }
 
         public long? DespositPrice { get; set; }
@@ -43,7 +43,7 @@ namespace Entities.Models.User
 
         [Required]
         public BuildingTypeEnum BuildingType { get; set; }
-  
+
         [StringLength(500)]
         public string Description { get; set; }
         public bool HasGarage { get; set; }
@@ -60,7 +60,7 @@ namespace Entities.Models.User
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 
-        public List<AdvertiseAvailableVisitDays>  AdvertiseAvailableVisitDays { get; set; }
+        public List<AdvertiseAvailableVisitDays> AdvertiseAvailableVisitDays { get; set; }
 
         #endregion
 

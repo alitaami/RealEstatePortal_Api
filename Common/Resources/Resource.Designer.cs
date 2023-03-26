@@ -79,6 +79,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to برای بازدید از این ملک چنین روزی تعیین نشده است .
+        /// </summary>
+        public static string AdvertiseDayNotMatch {
+            get {
+                return ResourceManager.GetString("AdvertiseDayNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to سن نباید کمتر از 18 باشد.
         /// </summary>
         public static string AgeError {
@@ -264,6 +273,15 @@ namespace Common.Resources {
         public static string WrongAdvertise {
             get {
                 return ResourceManager.GetString("WrongAdvertise", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to روز های هفته باید شامل شنبه تا جمعه باشند.
+        /// </summary>
+        public static string WrongDaySelected {
+            get {
+                return ResourceManager.GetString("WrongDaySelected", resourceCulture);
             }
         }
     }

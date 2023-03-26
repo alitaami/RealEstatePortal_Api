@@ -6,6 +6,8 @@ using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
 using Entities.Models.User;
+using Entities.Models.User.Advertises;
+using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -340,7 +342,7 @@ namespace Services.Interfaces.Services
             }
         }
 
-        public async Task<ServiceResult> GetAllAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0, int userId = 0)
+        public async Task<ServiceResult> GetAllAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0, int userId = 0)
         {
             try
             {
@@ -375,12 +377,17 @@ namespace Services.Interfaces.Services
 
                 switch (saleType)
                 {
+                    case "all":
+                        {
+                            break;
+                        }
+
                     case "rent":
                         {
 
-                            if (startrentprice > 0 && endrentprice > 0 && endrentprice > startrentprice)
+                            if (startrentprice >= 0 && endrentprice >= 0 && endrentprice > startrentprice)
                             {
-                                result = result.Where(c => c.RentPrice > startrentprice && c.RentPrice < endrentprice && !c.ForSale);
+                                result = result.Where(c => c.RentPrice >= startrentprice && c.RentPrice <= endrentprice && !c.ForSale);
 
                             }
                             else
@@ -392,9 +399,9 @@ namespace Services.Interfaces.Services
 
                     case "sale":
                         {
-                            if (startprice > 0 && endprice > 0 && endprice > startprice)
+                            if (startprice >= 0 && endprice >= 0 && endprice > startprice)
                             {
-                                result = result.Where(c => c.TotalPrice > startprice && c.TotalPrice < endprice && c.ForSale);
+                                result = result.Where(c => c.TotalPrice >= startprice && c.TotalPrice <= endprice && c.ForSale);
                             }
 
                             else
@@ -595,26 +602,27 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                ValidateModel(SelectedDays);
+                ValidateModel(advertiseId);
 
-                var result = _repoAd
-                                .TableNoTracking
-                                .Where(u => u.UserId == userId && !u.IsDelete && u.IsConfirm && u.Id == advertiseId).FirstOrDefault();
-               
-                if (result is null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
+                if (!CheckUserHasThisAdvertise(advertiseId, userId))
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
 
                 foreach (var p in SelectedDays)
                 {
-                    var check = _repoAv.TableNoTracking.Where(u => u.DayOfWeek == (Entities.Common.Enums.DaysOfWeek)p && u.AdvertiseId == advertiseId);
+                    if (p < 1 || p > 7)
+                        return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongDaySelected, null);///
 
-                    if (check!=null)
+                    var check = _repoAv.TableNoTracking
+                        .Any(u => u.DayOfWeek == (Entities.Common.Enums.DaysOfWeek)p && u.AdvertiseId == advertiseId);
+
+                    if (check)
                         return BadRequest(ErrorCodeEnum.BadRequest, Resource.DaysExists, null);///
 
                     _repoAv.Add(new AdvertiseAvailableVisitDays
                     {
                         DayOfWeek = (Entities.Common.Enums.DaysOfWeek)p,
-                        AdvertiseId = advertiseId
+                        AdvertiseId = advertiseId,
+                        
                     });
                 }
                 return Ok();
@@ -627,8 +635,74 @@ namespace Services.Interfaces.Services
 
             }
         }
+        public async Task<ServiceResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId)
+        {
+            try
+            {
+                ValidateModel(advertiseId);
+
+                if (!CheckUserHasThisAdvertise(advertiseId, userId))
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                _repoAv.Table.Where(d => d.AdvertiseId == advertiseId)
+                    .ToList()
+                    .ForEach(d => _repoAv.Delete(d));
+
+                await CreateAdvertiseAvailableVisitDays(SelectedDays, advertiseId, userId);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId, int userId)
+        {
+            try
+            {
+                ValidateModel(advertiseId);
+
+                if (!CheckUserHasThisAdvertise(advertiseId, userId))
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.WrongAdvertise, null);///
+
+                var result = _repoAv.TableNoTracking
+                    .Where(u => u.AdvertiseId == advertiseId)
+                    .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
 
         #endregion
 
+        #region Mostly used methods
+        public bool CheckUserHasThisAdvertise(int advertiseId, int userId)
+        {
+            ValidateModel(advertiseId);
+            ValidateModel(userId);
+
+            var result = _repoAd
+                       .TableNoTracking
+                       .Any(u => u.UserId == userId && !u.IsDelete && u.IsConfirm && u.Id == advertiseId);
+
+            if (result)
+                return true;
+
+            else
+                return false;
+        }
+
+        #endregion
     }
 }

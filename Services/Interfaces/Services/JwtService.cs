@@ -1,6 +1,7 @@
 ﻿using Common;
 using Data.Repositories;
 using Entities.Models.User;
+using Entities.Models.User.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -76,7 +77,7 @@ namespace Services.Interfaces.Services
 
             var list = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name , user.UserName),
+            new Claim(ClaimTypes.Name , user.FullName),
             new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()),
             new Claim(ClaimTypes.MobilePhone , user.PhoneNumber.ToString()),
             new Claim(securityStampClaimType, user.SecurityStamp.ToString())

@@ -6,6 +6,8 @@ using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
 using Entities.Models.User;
+using Entities.Models.User.Advertises;
+using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -26,15 +28,19 @@ namespace Services.Interfaces.Services
         private IRepository<UserAdvertises> _repoAd;
         private IRepository<UserRoles> _repoUR;
         private IRepository<Role> _repoR;
+        private IRepository<AdvertiseAvailableVisitDays> _repoAv;
+        private IRepository<RequestForAdvertiseVisitViewModel> _repoReq;
         ILogger<AdvertiseService> _logger;
         //private readonly IJwtService _jwtService;
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<RequestForAdvertiseVisitViewModel> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
             _repoUR = repoUR;
             _repoR = repoR;
             _repoAd = repoAd;
+            _repoAv = repoav;
+            _repoReq = req;
         }
 
         #region public
@@ -114,7 +120,7 @@ namespace Services.Interfaces.Services
             }
         }
 
-        public async Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
+        public async Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             try
             {
@@ -144,12 +150,17 @@ namespace Services.Interfaces.Services
 
                 switch (saleType)
                 {
+                    case "all":
+                        {
+                            break;
+                        }
+
                     case "rent":
                         {
 
-                            if (startrentprice > 0 && endrentprice > 0 && endrentprice > startrentprice)
+                            if (startrentprice >= 0 && endrentprice >= 0 && endrentprice > startrentprice)
                             {
-                                result = result.Where(c => c.RentPrice > startrentprice && c.RentPrice < endrentprice && !c.ForSale);
+                                result = result.Where(c => c.RentPrice >= startrentprice && c.RentPrice <= endrentprice && !c.ForSale);
 
                             }
                             else
@@ -162,9 +173,9 @@ namespace Services.Interfaces.Services
 
                     case "sale":
                         {
-                            if (startprice > 0 && endprice > 0 && endprice > startprice)
+                            if (startprice >= 0 && endprice  >= 0 && endprice > startprice)
                             {
-                                result = result.Where(c => c.TotalPrice > startprice && c.TotalPrice < endprice && c.ForSale);
+                                result = result.Where(c => c.TotalPrice >= startprice && c.TotalPrice <= endprice && c.ForSale);
                             }
                             else
                             {
@@ -214,6 +225,58 @@ namespace Services.Interfaces.Services
             {
                 _logger.LogError(ex, null, null);
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
+
+        public async Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId)
+        {
+            try
+            {
+                ValidateModel(advertiseId);
+
+                 
+                var result = _repoAv.TableNoTracking
+                    .Where(u => u.AdvertiseId == advertiseId)
+                    .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+
+        public async Task<ServiceResult> RequestForAdvertiseVisit(RequestForAdvertiseVisitViewModel request)
+        {
+            try
+            {
+                ValidateModel(request);
+
+
+                var result = _repoAv.TableNoTracking
+                    .Any(u => u.AdvertiseId == request.AdvertiseId && u.DayOfWeek == request.DayOfWeek);
+
+                var req = new AdvertiseVisitRequests
+                {
+                    AdvertiseId= request.AdvertiseId,
+                    DayOfWeek = request.DayOfWeek,
+                   
+
+
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
             }
         }
 

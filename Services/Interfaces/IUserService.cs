@@ -19,6 +19,13 @@ namespace Services.Interfaces
         public Task<ServiceResult> UpdateAdvertiseOfUser(int advertiseId, int userId, UserAdvertiseViewModel ua, CancellationToken cancellationToken);
         public Task<ServiceResult> DeleteAdvertiseOfUser(int advertiseId, int userId, CancellationToken cancellationToken);
         public Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
+        public Task<ServiceResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
+        public Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId, int userId);
+
+
+        #region Mostly repeated codes
+        public bool CheckUserHasThisAdvertise(int advertiseId, int userId);
+        #endregion
 
     }
 }

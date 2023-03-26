@@ -25,12 +25,19 @@ namespace EstateAgentApi.Controllers
             _Ad = ad;
 
         }
+    
         /// <summary>
-        /// Get advertise by searching and pagination
+        /// 
         /// </summary>
         /// <param name="pageId"></param>
         /// <param name="advertiseText"></param>
         /// <param name="homeAddress"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="saleType"></param>
+        /// <param name="startprice"></param>
+        /// <param name="endprice"></param>
+        /// <param name="startrentprice"></param>
+        /// <param name="endrentprice"></param>
         /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
@@ -39,7 +46,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
+        public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var result = await _Ad.GetAllAdvertises(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice);
 
@@ -61,6 +68,20 @@ namespace EstateAgentApi.Controllers
         public async Task<IActionResult> AdvertiseDetail(int advertiseId)
         {
             var result = await _Ad.GetAdveriseForShow(advertiseId);
+
+            return APIResponse(result);
+        } 
+        
+        [HttpGet]
+        [SwaggerOperation("روزهای بازدید از ملک")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAdvertiseAvailableVisitDays(int advertiseId)
+        {
+            var result = await _Ad.GetAdvertiseAvailableVisitDays(advertiseId);
 
             return APIResponse(result);
         }

@@ -1,4 +1,6 @@
 ﻿using Entities.Common;
+using Entities.Models.User.Advertises;
+using Entities.Models.User.Roles;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Models.User

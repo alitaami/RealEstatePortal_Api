@@ -3,6 +3,7 @@ using Common.Utilities;
 using Data;
 using Data.Repositories;
 using Entities.Models.User;
+using Entities.Models.User.Roles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;

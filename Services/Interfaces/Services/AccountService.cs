@@ -4,6 +4,7 @@ using Data.Repositories;
 using Entities.Base;
 using Entities.Common.ViewModels;
 using Entities.Models.User;
+using Entities.Models.User.Roles;
 using Entities.ViewModels;
 using EstateAgentApi.Services.Base;
 using Microsoft.AspNetCore.Identity;

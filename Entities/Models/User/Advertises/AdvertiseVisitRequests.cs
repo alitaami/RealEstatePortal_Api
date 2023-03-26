@@ -1,6 +1,5 @@
 ﻿using Entities.Common;
 using Entities.Common.Enums;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,14 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User
+namespace Entities.Models.User.Advertises
 {
-    public class AdvertiseAvailableVisitDays:BaseEntity
+    public class AdvertiseVisitRequests : BaseEntity
     {
         [Required]
         public int AdvertiseId { get; set; }
+
+        [Required]
+        public int UserIdOfUser { get; set; }
+
+        [Required]
+        public string FullNameOfUser { get; set; }
+
         [Required]
         public DaysOfWeek DayOfWeek { get; set; }
+        public bool IsConfirm { get; set; }
+        public bool IsDelete { get; set; }
 
         #region relations
         [ForeignKey(nameof(AdvertiseId))]
