@@ -726,6 +726,8 @@ namespace Services.Interfaces.Services
 
                 if (result.IsConfirm == true)
                     result.IsConfirm = false;
+                
+                //TODO Send mail to users who sent requests
 
                 else if (result.IsConfirm == false)
                     result.IsConfirm = true;

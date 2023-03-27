@@ -281,6 +281,8 @@ namespace Services.Interfaces.Services
 
                 _repoReq.Add(req);
 
+                //TODO Send mail to advertiser
+
                 return Ok(req);
             }
             catch (Exception ex)
