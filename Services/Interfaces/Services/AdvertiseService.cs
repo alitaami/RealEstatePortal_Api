@@ -32,9 +32,9 @@ namespace Services.Interfaces.Services
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
         private IRepository<AdvertiseVisitRequests> _repoReq;
         ILogger<AdvertiseService> _logger;
-        //private readonly IJwtService _jwtService;
+        private readonly IUserService _user;
 
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        public AdvertiseService(ILogger<AdvertiseService> logger, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
@@ -43,6 +43,7 @@ namespace Services.Interfaces.Services
             _repoAd = repoAd;
             _repoAv = repoav;
             _repoReq = req;
+            _user = user;
         }
 
         #region public
@@ -258,16 +259,25 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(advertiseId);
 
+                #region conditions
                 var result = _repoAv.TableNoTracking
                     .Any(u => u.AdvertiseId == advertiseId && u.DayOfWeek == (DaysOfWeek)dayOfWeek);
 
                 if (!result)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
 
-                var userCheck = _repoAd.TableNoTracking.Any(u => u.Id == advertiseId && u.UserId == userId);
+                var userCheck = _repoAd.TableNoTracking
+                    .Any(u => u.Id == advertiseId && u.UserId == userId && !u.IsDelete && u.IsConfirm);
 
                 if (userCheck)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.UserRequestError, null);///
+
+                var requestExist = _repoReq.TableNoTracking
+                    .Any(u => u.UserIdOfUser == userId && u.AdvertiseId == advertiseId && !u.IsDelete);
+
+                if (requestExist)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.RequestExists, null);///
+                #endregion
 
                 var req = new AdvertiseVisitRequests
                 {
@@ -281,9 +291,25 @@ namespace Services.Interfaces.Services
 
                 _repoReq.Add(req);
 
-                //TODO Send mail to advertiser
+                //Send mail to advertiser
 
-                return Ok(req);
+                #region send activation email            
+                var email = await GetAdvertiserEmail(req.AdvertiseId);
+                string body = Resource.EmailSubject2 + " ** " + fullName + " ** " + Resource.EmailSubject2_1;
+
+                await SendMail.SendAsync(email, Resource.RequestVisit, body);
+                #endregion
+
+                var res = new AdvertiseVisitRequestsDto
+                {
+                    AdvertiseId= req.AdvertiseId,
+                    DayOfWeek = req.DayOfWeek,
+                    FullNameOfUser= req.FullNameOfUser,
+                    IsConfirm = req.IsConfirm
+
+                };
+
+                return Ok(res);
             }
             catch (Exception ex)
             {
@@ -295,5 +321,51 @@ namespace Services.Interfaces.Services
         }
 
         #endregion
+
+        #region most used methods
+        public async Task<string> GetUserFullname(int userId)
+        {
+
+            ValidateModel(userId);
+
+            var result = await _repo.Entities
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (result is null)
+                return null;///
+
+            var fullName = result.FullName;
+
+            return fullName;
+
+        }
+        public async Task<string> GetAdvertiserEmail(int advertiseId)
+        {
+
+            ValidateModel(advertiseId);
+
+            var result = await _repoAd.Entities
+                .Where(u => u.Id == advertiseId)
+                .FirstOrDefaultAsync();
+
+            if (result is null)
+                return null;///
+
+            var userId = result.UserId;
+
+            var user = await _repo.Entities
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                return null;///
+
+            return user.Email;
+
+        }
+
+        #endregion
+
     }
 }

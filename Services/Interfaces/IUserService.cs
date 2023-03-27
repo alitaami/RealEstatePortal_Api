@@ -28,6 +28,8 @@ namespace Services.Interfaces
 
         #region Mostly repeated codes
         public bool CheckUserHasThisAdvertise(int advertiseId, int userId);
+        public Task<string> GetUserEmail(int userId);
+        public Task<string> GetAdvertiseName(int advetiseId);
         #endregion
 
     }

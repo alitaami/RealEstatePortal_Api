@@ -135,8 +135,23 @@
   <data name="AlreadyExists2" xml:space="preserve">
     <value>تلفن همراه ، نام کاربری و یا کد املاک تکراریست!</value>
   </data>
+  <data name="ConfirmVisit" xml:space="preserve">
+    <value>تایید درخواست بازدید از ملک</value>
+  </data>
   <data name="DaysExists" xml:space="preserve">
     <value>این روز برای آگهی شما ثبت شده است</value>
+  </data>
+  <data name="EmailSubject1" xml:space="preserve">
+    <value>درخواست بازدید شما از ملک آگهی شده</value>
+  </data>
+  <data name="EmailSubject1-1" xml:space="preserve">
+    <value>مورد تایید قرار گرفت</value>
+  </data>
+  <data name="EmailSubject2" xml:space="preserve">
+    <value>درخواست بازدید از ملک آگهی شده شما، توسط </value>
+  </data>
+  <data name="EmailSubject2-1" xml:space="preserve">
+    <value>برای شما ارسال شده است</value>
   </data>
   <data name="EnterParametersCorrectlyAndCompletely" xml:space="preserve">
     <value>پارامترهای ارسالی را کامل و صحیح وارد کنید.</value>
@@ -167,6 +182,12 @@
   </data>
   <data name="PasswordUnique" xml:space="preserve">
     <value>رمزعبور باید شامل حروف خاص باشد</value>
+  </data>
+  <data name="RequestExists" xml:space="preserve">
+    <value>شما قبلا درخواستی برای بازدید از این ملک ارسال کرده اید</value>
+  </data>
+  <data name="RequestVisit" xml:space="preserve">
+    <value>درخواست بازدید از ملک</value>
   </data>
   <data name="RoleNotFound" xml:space="preserve">
     <value>نقشی یافت نشد</value>

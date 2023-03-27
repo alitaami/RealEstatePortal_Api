@@ -115,11 +115,56 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تایید درخواست بازدید از ملک.
+        /// </summary>
+        public static string ConfirmVisit {
+            get {
+                return ResourceManager.GetString("ConfirmVisit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to این روز برای آگهی شما ثبت شده است.
         /// </summary>
         public static string DaysExists {
             get {
                 return ResourceManager.GetString("DaysExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید شما از ملک آگهی شده.
+        /// </summary>
+        public static string EmailSubject1 {
+            get {
+                return ResourceManager.GetString("EmailSubject1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مورد تایید قرار گرفت.
+        /// </summary>
+        public static string EmailSubject1_1 {
+            get {
+                return ResourceManager.GetString("EmailSubject1-1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید از ملک آگهی شده شما، توسط .
+        /// </summary>
+        public static string EmailSubject2 {
+            get {
+                return ResourceManager.GetString("EmailSubject2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to برای شما ارسال شده است.
+        /// </summary>
+        public static string EmailSubject2_1 {
+            get {
+                return ResourceManager.GetString("EmailSubject2-1", resourceCulture);
             }
         }
         
@@ -210,6 +255,24 @@ namespace Common.Resources {
         public static string PasswordUnique {
             get {
                 return ResourceManager.GetString("PasswordUnique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to شما قبلا درخواستی برای بازدید از این ملک ارسال کرده اید.
+        /// </summary>
+        public static string RequestExists {
+            get {
+                return ResourceManager.GetString("RequestExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید از ملک.
+        /// </summary>
+        public static string RequestVisit {
+            get {
+                return ResourceManager.GetString("RequestVisit", resourceCulture);
             }
         }
         

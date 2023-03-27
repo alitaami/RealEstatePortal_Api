@@ -9,6 +9,8 @@ using Entities.Models.User;
 using Entities.Models.User.Advertises;
 using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -343,7 +345,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> GetAllAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0, int userId = 0)
         {
             try
@@ -456,7 +457,6 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-
         public async Task<ServiceResult> UpdateAdvertiseOfUser(int advertiseId, int userId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
         {
             try
@@ -722,16 +722,25 @@ namespace Services.Interfaces.Services
                     .FirstOrDefaultAsync();
 
                 if (result is null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
 
                 if (result.IsConfirm == true)
                     result.IsConfirm = false;
-                
-                //TODO Send mail to users who sent requests
 
                 else if (result.IsConfirm == false)
+                {
                     result.IsConfirm = true;
 
+                    // Send mail to users who sent requests
+
+                    #region send activation email
+                    var email = await GetUserEmail(result.UserIdOfUser);
+                    var advName = await GetAdvertiseName(result.AdvertiseId);
+                    string body = Resource.EmailSubject1 + "**" + advName + "**" + Resource.EmailSubject1_1;
+
+                    await SendMail.SendAsync(email, Resource.ConfirmVisit, body);
+                    #endregion
+                }
                 _repoReq.Update(result);
 
                 var res = new AdvertiseVisitRequestsDto
@@ -828,8 +837,38 @@ namespace Services.Interfaces.Services
             else
                 return false;
         }
+        public async Task<string> GetUserEmail(int userId)
+        {
+           
+                ValidateModel(userId);
 
+                var result = await _repo.Entities
+                    .Where(u => u.Id == userId)
+                    .FirstOrDefaultAsync();
 
+                if (result is null)
+                    return null;///
+
+                var email = result.Email;
+
+                return email;
+          
+        }
+        public async Task<string> GetAdvertiseName(int advetiseId)
+        { 
+                ValidateModel(advetiseId);
+
+                var result = await _repoAd.Entities
+                    .Where(u => u.Id == advetiseId)
+                    .FirstOrDefaultAsync();
+
+                if (result is null)
+                    return null;///
+
+                var advName = result.AdvertiseText;
+
+                return advName;
+        }
 
         #endregion
 
