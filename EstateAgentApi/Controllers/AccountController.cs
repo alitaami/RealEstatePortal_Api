@@ -100,5 +100,45 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
+        [HttpPost]
+        [SwaggerOperation("ارسال کد بازیابی")]
+        [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, CancellationToken cancellationToken)
+        {
+            var result = await _acc.ForgotPassword(model, cancellationToken);
+
+            return APIResponse(result);
+
+        }
+        [HttpPost]
+        [SwaggerOperation("بررسی کدبازیابی")]
+        [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> RecoveryKeyCheck(RecoveryCodeViewModel model, CancellationToken cancellationToken)
+        {
+            var result = await _acc.RecoveryKey(model, cancellationToken);
+
+            return APIResponse(result);
+
+        }
+        [HttpPost]
+        [SwaggerOperation("بازیابی رمزعبور")]
+        [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> AssignNewPassword(int userId, AssignNewPasswordViewModel model, CancellationToken cancellationToken)
+        {
+            var result = await _acc.AssignNewPassword(userId,model, cancellationToken);
+
+            return APIResponse(result);
+
+        }
+       
     }
 }

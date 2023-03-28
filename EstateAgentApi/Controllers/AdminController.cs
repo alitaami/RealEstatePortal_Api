@@ -20,7 +20,11 @@ using Entities.Models.User.Roles;
 
 namespace EstateAgentApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [SwaggerTag("سرویس های صفحه اصلی")]
+    [Authorize(Roles = "3")]
     public class AdminController : APIControllerBase
     {
         private readonly ILogger<AdminController> _logger;
@@ -35,13 +39,14 @@ namespace EstateAgentApi.Controllers
             _repo = repo;
             _admin = admin;
         }
+     
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UserAdvertisesForHomePage), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var result = await _admin.GetAllAdvertises(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice);
@@ -111,8 +116,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(Role), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetRoles()
+         public async Task<IActionResult> GetRoles()
         {
             var result = await _admin.GetRoles();
 
@@ -136,7 +140,6 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(Role), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> EditRoles(int roleId, RoleViewModel role)
         {
             var result = await _admin.EditRoles(roleId, role);
@@ -150,8 +153,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(EstateAgentDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllUsers(int pageId = 1, string fullName = "", string phoneNumber = "", string email = "")
+         public async Task<IActionResult> GetAllUsers(int pageId = 1, string fullName = "", string phoneNumber = "", string email = "")
         {
             var result = await _admin.GetAllUsers(pageId,fullName,phoneNumber,email);
 
@@ -184,5 +186,6 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
+    
     }
 }

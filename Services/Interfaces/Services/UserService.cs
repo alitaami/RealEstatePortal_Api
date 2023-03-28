@@ -43,8 +43,6 @@ namespace Services.Interfaces.Services
         }
 
         #region User Panel
-
-
         public async Task<ServiceResult> UpdateEstateAgentInfo(int userId, EstateAgentPanelViewModel user, CancellationToken cancellationToken)
         {
             try
@@ -733,7 +731,7 @@ namespace Services.Interfaces.Services
 
                     // Send mail to users who sent requests
 
-                    #region send activation email
+                    #region send  email
                     var email = await GetUserEmail(result.UserIdOfUser);
                     var advName = await GetAdvertiseName(result.AdvertiseId);
                     string body = Resource.EmailSubject1 + "**" + advName + "**" + Resource.EmailSubject1_1;

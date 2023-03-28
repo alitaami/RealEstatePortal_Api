@@ -121,7 +121,7 @@ namespace Entities.Common.ViewModels
         public string EstateCode { get; set; }
     }
 
-    public class  UserViewModelFromAdmin
+    public class UserViewModelFromAdmin
     {
         [Required]
         [StringLength(100)]
@@ -167,7 +167,7 @@ namespace Entities.Common.ViewModels
 
     public class EditUserViewModelFromAdmin
     {
-  
+
         [Required]
         [StringLength(500)]
         [PasswordQuality(8, 4, ErrorMessageResourceName = "PasswordQuality", ErrorMessageResourceType = typeof(Resource))]
@@ -181,10 +181,6 @@ namespace Entities.Common.ViewModels
         public string FullName { get; set; }
 
         [Required]
-        [EmailAddress(ErrorMessage = "That should be in email format!")]
-        [StringLength(100)]
-        public string Email { get; set; }
-        [Required]
         public int Age { get; set; }
 
         public bool IsEstateConsultant { get; set; }
@@ -194,11 +190,32 @@ namespace Entities.Common.ViewModels
         [Required]
         [StringLength(11)]
         public string EstatePhoneNumber { get; set; }
- 
+
         public DateTimeOffset? LastLoginDate { get; set; }
 
         public bool IsActive { get; set; }
 
     }
+    public class ForgotPasswordViewModel
+    {
+        [Required]
+        public string Username { get; set; }
+ 
+    }
+    public class RecoveryCodeViewModel
+    {
+        [Required]
+         public string RecoveryCode { get; set; }
 
+    }
+    public class AssignNewPasswordViewModel
+    {
+        [Required]
+        public string NewPassword { get; set; }
+        [Required]
+        [Compare(nameof(NewPassword))]
+        public string ConfirmNewPassword { get; set; }
+
+
+    }
 }

@@ -50,8 +50,10 @@ namespace Entities.Models.User
         public virtual List<UserRoles> UserRoles { get; set; }
 
         public virtual List<UserAdvertises> UserAdvertises { get; set; }
+        public virtual List<UserForgetPassword> UserForgetPassword { get; set; }
+
 
         #endregion
     }
- 
+
 }

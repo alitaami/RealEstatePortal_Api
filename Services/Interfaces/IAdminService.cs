@@ -25,7 +25,9 @@ namespace Services.Interfaces
         public Task<ServiceResult> CreateUser(UserViewModelFromAdmin user);
         public Task<ServiceResult> EditUser(EditUserViewModelFromAdmin user, int userId);
         #region most used methods
-        public Task<bool> RoleExist(string name);
+        public Task<bool> RoleExistForEdit(string name, int roleId);
+        public Task<bool> RoleExistForCerate(string name);
+
         #endregion
     }
 }

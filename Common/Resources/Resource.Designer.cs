@@ -187,6 +187,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مدت زمان در نظر گرفته شده منقضی شده است.
+        /// </summary>
+        public static string ExpiredDate {
+            get {
+                return ResourceManager.GetString("ExpiredDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جهت بازیابی رمزعبور کد ذیل را در فیلد مربوطه وارد کنید.دقت شود که این کد تا 5 دقیقه معتبر است.
+        /// </summary>
+        public static string ForgotPassword1 {
+            get {
+                return ResourceManager.GetString("ForgotPassword1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لطفا مجددا تلاش کنید.
         /// </summary>
         public static string GeneralErrorTryAgain {
@@ -255,6 +273,15 @@ namespace Common.Resources {
         public static string PasswordUnique {
             get {
                 return ResourceManager.GetString("PasswordUnique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to بازیابی رمز عبور.
+        /// </summary>
+        public static string RecoveryPassword {
+            get {
+                return ResourceManager.GetString("RecoveryPassword", resourceCulture);
             }
         }
         

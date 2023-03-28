@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230328164434_email-unique")]
+    partial class emailunique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -288,34 +291,6 @@ namespace Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserForgetPassword", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("ExpireDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("RecoveryKey")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserForgetPasswords");
-                });
-
             modelBuilder.Entity("Entities.Models.User.Advertises.AdvertiseAvailableVisitDays", b =>
                 {
                     b.HasOne("Entities.Models.User.Advertises.UserAdvertises", "UserAdvertises")
@@ -368,17 +343,6 @@ namespace Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserForgetPassword", b =>
-                {
-                    b.HasOne("Entities.Models.User.User", "User")
-                        .WithMany("UserForgetPassword")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Entities.Models.User.Advertises.UserAdvertises", b =>
                 {
                     b.Navigation("AdvertiseAvailableVisitDays");
@@ -392,8 +356,6 @@ namespace Data.Migrations
             modelBuilder.Entity("Entities.Models.User.User", b =>
                 {
                     b.Navigation("UserAdvertises");
-
-                    b.Navigation("UserForgetPassword");
 
                     b.Navigation("UserRoles");
                 });

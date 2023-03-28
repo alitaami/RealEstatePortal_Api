@@ -46,6 +46,10 @@ namespace Data
             modelBuilder.Entity<User>()
                .HasIndex(x => x.PhoneNumber)
                .IsUnique();
+           
+            modelBuilder.Entity<User>()
+               .HasIndex(x => x.Email)
+               .IsUnique();
         }
         #endregion 
 

@@ -508,7 +508,7 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                var res = _repoR.TableNoTracking.ToList().Where(r=>!r.IsDelete);
+                var res = _repoR.TableNoTracking.ToList().Where(r => !r.IsDelete);
 
                 if (res is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
@@ -526,18 +526,20 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                if (await RoleExist(role.Name))
+                if (await RoleExistForCerate(role.Name))
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleExist, null);///
 
                 var res = new Role
                 {
                     Name = role.Name,
-                    Description = role.Description
+                    Description = role.Description,
+                    IsDelete = role.IsDelete
+                    
                 };
 
                 _repoR.Add(res);
 
-                return Ok();
+                return Ok(res);
             }
             catch (Exception ex)
             {
@@ -556,19 +558,17 @@ namespace Services.Interfaces.Services
 
                 if (r is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
-
-                if (await RoleExist(role.Name))
+                  
+                if (await RoleExistForEdit(role.Name, roleId))
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleExist, null);///
 
                 r.Name = role.Name;
                 r.Description = role.Description;
+                r.IsDelete = role.IsDelete;
 
-                var res = _repoR.Entities.Update(r);
+                _repoR.Update(r);
 
-                if (res is null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
-
-                return Ok(res);
+                return Ok(r);
             }
             catch (Exception ex)
             {
@@ -579,7 +579,6 @@ namespace Services.Interfaces.Services
             }
 
         }
-
         public async Task<ServiceResult> GetAllUsers(int pageId = 1, string fullName = "", string phoneNumber = "", string email = "")
         {
             try
@@ -656,7 +655,7 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(user);
 
-                if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber || u.EstateCode == user.EstateCode))
+                if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber || u.Email == user.Email || u.EstateCode == user.EstateCode))
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AlreadyExists2, null);///
 
                 var PasswordHash = SecurityHelper.GetSha256Hash(user.Password);
@@ -715,17 +714,17 @@ namespace Services.Interfaces.Services
             try
             {
                 ValidateModel(user);
-      
+
                 var r = await _repo.Entities.Where(r => r.Id == userId).FirstOrDefaultAsync();
 
                 if (r is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
- 
-                //if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber || u.EstateCode == user.EstateCode))
+
+                //if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber|| u.Email == user.Email || u.EstateCode == user.EstateCode))
                 //    return BadRequest(ErrorCodeEnum.BadRequest, Resource.AlreadyExists2, null);///
 
                 var PasswordHash = SecurityHelper.GetSha256Hash(user.Password);
- 
+
                 if (user.IsEstateConsultant)
                 {
                     //r.UserName = user.UserName;
@@ -734,7 +733,7 @@ namespace Services.Interfaces.Services
                     r.FullName = user.FullName;
                     //r.EstateCode = user.EstateCode;
                     r.Age = user.Age;
-                    r.Email = user.Email;
+                    //r.Email = user.Email;
                     r.IsActive = user.IsActive;
                     r.IsEstateConsultant = user.IsEstateConsultant;
                     r.EstateAddress = user.EstateAddress;
@@ -751,7 +750,7 @@ namespace Services.Interfaces.Services
                     r.FullName = user.FullName;
                     //r.EstateCode = null;
                     r.Age = user.Age;
-                    r.Email = user.Email;
+                    //r.Email = user.Email;
                     r.IsActive = user.IsActive;
                     r.IsEstateConsultant = user.IsEstateConsultant;
                     r.EstateAddress = null;
@@ -770,11 +769,21 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-
         #endregion
 
         #region most used methods
-        public async Task<bool> RoleExist(string name)
+        public async Task<bool> RoleExistForEdit(string name,int roleId)
+        {
+
+            var roleExist = _repoR.TableNoTracking.Where(r => r.Id != roleId).Any(r => r.Name == name && !r.IsDelete);
+
+            if (roleExist)
+                return true;///
+
+            else
+                return false;
+        }
+        public async Task<bool> RoleExistForCerate(string name)
         {
 
             var roleExist = _repoR.TableNoTracking.Any(r => r.Name == name && !r.IsDelete);

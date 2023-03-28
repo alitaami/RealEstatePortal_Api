@@ -81,17 +81,13 @@ namespace Services.Interfaces.Services
             new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()),
             new Claim(ClaimTypes.MobilePhone , user.PhoneNumber.ToString()),
             new Claim(securityStampClaimType, user.SecurityStamp.ToString())
-
         };
-
             var roles = _repo.Entities.Where(u => u.UserId == user.Id);
 
             foreach (var role in roles)
             {
                 list.Add(new Claim(ClaimTypes.Role, role.RoleId.ToString()));
             }
-
-
             return list;
         }
 

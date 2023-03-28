@@ -159,6 +159,12 @@
   <data name="EstateInfo" xml:space="preserve">
     <value>اطلاعات املاک نمیتواند خالی باشد</value>
   </data>
+  <data name="ExpiredDate" xml:space="preserve">
+    <value>مدت زمان در نظر گرفته شده منقضی شده است</value>
+  </data>
+  <data name="ForgotPassword1" xml:space="preserve">
+    <value>جهت بازیابی رمزعبور کد ذیل را در فیلد مربوطه وارد کنید.دقت شود که این کد تا 5 دقیقه معتبر است</value>
+  </data>
   <data name="GeneralErrorTryAgain" xml:space="preserve">
     <value>لطفا مجددا تلاش کنید</value>
   </data>
@@ -182,6 +188,9 @@
   </data>
   <data name="PasswordUnique" xml:space="preserve">
     <value>رمزعبور باید شامل حروف خاص باشد</value>
+  </data>
+  <data name="RecoveryPassword" xml:space="preserve">
+    <value>بازیابی رمز عبور</value>
   </data>
   <data name="RequestExists" xml:space="preserve">
     <value>شما قبلا درخواستی برای بازدید از این ملک ارسال کرده اید</value>
