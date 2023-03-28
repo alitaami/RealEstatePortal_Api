@@ -277,6 +277,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نقش وارد شده تکراری میباشد.
+        /// </summary>
+        public static string RoleExist {
+            get {
+                return ResourceManager.GetString("RoleExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نقشی یافت نشد.
         /// </summary>
         public static string RoleNotFound {
@@ -336,6 +345,15 @@ namespace Common.Resources {
         public static string UserRequestError {
             get {
                 return ResourceManager.GetString("UserRequestError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to این نقش قبلا به این کاربر نسبت داده شده است.
+        /// </summary>
+        public static string UserRoleExist {
+            get {
+                return ResourceManager.GetString("UserRoleExist", resourceCulture);
             }
         }
         

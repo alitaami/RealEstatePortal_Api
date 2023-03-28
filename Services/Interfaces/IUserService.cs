@@ -13,7 +13,6 @@ namespace Services.Interfaces
         public Task<ServiceResult> GetUserInfo(int userId, CancellationToken cancellationToken);
         public Task<ServiceResult> UpdateUserInfo(int userId, UserPanelViewModel user, CancellationToken cancellationToken);
         public Task<ServiceResult> UpdateEstateAgentInfo(int userId, EstateAgentPanelViewModel user, CancellationToken cancellationToken);
-
         public Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModel ua, int userId, CancellationToken cancellationToken);
         public Task<ServiceResult> GetAllAdvertisesOfUser(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "sale", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0, int userId = 0);
         public Task<ServiceResult> UpdateAdvertiseOfUser(int advertiseId, int userId, UserAdvertiseViewModel ua, CancellationToken cancellationToken);

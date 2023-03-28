@@ -506,11 +506,11 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IJwtService, JwtService>();      
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
 
         }
-
 
         private static void AddAppHsts(WebApplicationBuilder builder)
         {

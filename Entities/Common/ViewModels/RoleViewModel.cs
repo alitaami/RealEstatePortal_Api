@@ -1,14 +1,13 @@
-﻿using Entities.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Roles
+namespace Entities.Common.ViewModels
 {
-    public class Role : BaseEntity
+    public class RoleViewModel
     {
         [Required]
         [StringLength(50)]
@@ -17,11 +16,5 @@ namespace Entities.Models.User.Roles
         [Required]
         [StringLength(100)]
         public string Description { get; set; }
-
-        public bool IsDelete { get; set; }
-        #region Relations
-        public virtual List<UserRoles> UserRoles { get; set; }
-
-        #endregion
     }
 }
