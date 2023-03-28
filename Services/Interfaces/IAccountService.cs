@@ -17,7 +17,8 @@ namespace Services.Interfaces
         public Task<ServiceResult> ForgotPassword(ForgotPasswordViewModel model, CancellationToken cancellationToken);
         public Task<ServiceResult> RecoveryKey(RecoveryCodeViewModel model, CancellationToken cancellationToken);
         public Task<ServiceResult> AssignNewPassword(int userId, AssignNewPasswordViewModel model, CancellationToken cancellationToken);
-
+        public Task<ServiceResult> ActivateUser(Guid guid, CancellationToken cancellationToken);
+        public Task<ServiceResult> SendActivationAfterLongtime(string username, CancellationToken cancellationToken);
 
     }
 }

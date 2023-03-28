@@ -655,7 +655,10 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(user);
 
-                if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber || u.Email == user.Email || u.EstateCode == user.EstateCode))
+                var checkDb = _repo.TableNoTracking
+                   .Where(u => u.UserName == user.UserName || u.Email == user.Email || u.PhoneNumber == user.PhoneNumber || u.EstateCode == user.EstateCode);
+
+                if (checkDb.Any())
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AlreadyExists2, null);///
 
                 var PasswordHash = SecurityHelper.GetSha256Hash(user.Password);

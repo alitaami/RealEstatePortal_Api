@@ -42,7 +42,10 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(user);
 
-                if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.Email == user.Email || u.PhoneNumber == user.PhoneNumber))
+                var checkDb = _repo.TableNoTracking
+                    .Where(u => u.UserName == user.UserName || u.Email == user.Email || u.PhoneNumber == user.PhoneNumber);
+
+                if (checkDb.Any())
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AlreadyExists, null);///
 
                 var PasswordHash = SecurityHelper.GetSha256Hash(user.Password);
@@ -62,16 +65,12 @@ namespace Services.Interfaces.Services
 
                 await _repo.AddAsync(u, cancellationToken);
 
-                // Role for user
-                //ToDo remove this   admin will give role
-                var uR = new UserRoles
-                {
-                    UserId = u.Id,
-                    RoleId = 2
-                };
+                #region send email
+                var email = u.Email;
+                string body = Resource.ActivateAccount + "<p>" + "https://localhost:7076/api/Account/ActivateUser?guid=" + u.ActivationGuid + "</p>";
 
-                await _repoUR.AddAsync(uR, cancellationToken);
-
+                await SendMail.SendAsync(email, Resource.ActivateAccountSubject, body);
+                #endregion
 
                 return Ok();
             }
@@ -90,7 +89,10 @@ namespace Services.Interfaces.Services
             {
                 ValidateModel(user);
 
-                if (await _repo.TableNoTracking.AnyAsync(u => u.UserName == user.UserName || u.PhoneNumber == user.PhoneNumber || u.Email == user.Email || u.EstateCode == user.EstateCode))
+                var checkDb = _repo.TableNoTracking
+                   .Where(u => u.UserName == user.UserName || u.Email == user.Email || u.PhoneNumber == user.PhoneNumber || u.EstateCode == user.EstateCode);
+
+                if (checkDb.Any())
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AlreadyExists2, null);///
 
                 var PasswordHash = SecurityHelper.GetSha256Hash(user.Password);
@@ -114,18 +116,12 @@ namespace Services.Interfaces.Services
 
                 await _repo.AddAsync(u, cancellationToken);
 
-                // Role for Estate member
-                // Role for user
-                //ToDo remove this   admin will give role
+                #region send email
+                var email = u.Email;
+                string body = Resource.ActivateAccount + "<p>" + "https://localhost:7076/api/Account/ActivateUser?guid=" + u.ActivationGuid + "</p>";
 
-                var uR = new UserRoles
-                {
-                    UserId = u.Id,
-                    RoleId = 1
-                };
-
-                await _repoUR.AddAsync(uR, cancellationToken);
-
+                await SendMail.SendAsync(email, Resource.ActivateAccountSubject, body);
+                #endregion
 
                 return Ok();
             }
@@ -262,16 +258,16 @@ namespace Services.Interfaces.Services
 
                 var newHashPass = SecurityHelper.GetSha256Hash(model.NewPassword);
 
-                user.PasswordHash= newHashPass;
+                user.PasswordHash = newHashPass;
 
                 _repo.Update(user);
 
                 // delete records of this user in UserForgetPassword because it is useless
 
                 var userForgetPassword = _repof.Entities.Where(u => u.UserId == userId).ToList();
-              
-                foreach(var item in userForgetPassword)
-                _repof.Delete(item);
+
+                foreach (var item in userForgetPassword)
+                    _repof.Delete(item);
 
                 return Ok(user);
             }
@@ -282,6 +278,67 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+        public async Task<ServiceResult> ActivateUser(Guid guid, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _repo.TableNoTracking
+                    .Where(u => u.ActivationGuid == guid)
+                    .FirstOrDefaultAsync();
+
+                if (user is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (user.IsActive)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.IsActive, null);///
+ 
+                user.IsActive = true;
+                user.ActivationGuid = Guid.NewGuid();
+
+                await _repo.UpdateAsync(user, cancellationToken);
+
+                return Ok(user);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
+        public async Task<ServiceResult> SendActivationAfterLongtime(string username, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _repo.TableNoTracking
+                    .Where(u => u.UserName == username)
+                    .FirstOrDefaultAsync();
+
+                if (user is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (user.IsActive)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.IsActive, null);///
+
+                #region send email
+                var email = user.Email;
+                string body = Resource.ActivateAccount + "<p>" + "https://localhost:7076/api/Account/ActivateUser?guid=" + user.ActivationGuid + "</p>";
+
+                await SendMail.SendAsync(email, Resource.ActivateAccountSubject, body);
+                #endregion
+  
+                return Ok(user);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
+
 
     }
 }

@@ -11,7 +11,8 @@ namespace Entities.Models.User
         {
             IsActive = false;
             SecurityStamp = Guid.NewGuid();
-        }
+            ActivationGuid = Guid.NewGuid();
+         }
 
         [Required]
         [StringLength(100)]
@@ -45,7 +46,8 @@ namespace Entities.Models.User
 
         public DateTimeOffset? LastLoginDate { get; set; }
         public Guid SecurityStamp { get; set; }
-
+        public Guid ActivationGuid { get; set; }
+   
         #region Relations
         public virtual List<UserRoles> UserRoles { get; set; }
 

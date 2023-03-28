@@ -61,6 +61,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جهت فعالسازی حساب کاربری خود رو لینک زیر کلیک کنید.
+        /// </summary>
+        public static string ActivateAccount {
+            get {
+                return ResourceManager.GetString("ActivateAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فعالسازی حساب کاربری.
+        /// </summary>
+        public static string ActivateAccountSubject {
+            get {
+                return ResourceManager.GetString("ActivateAccountSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to آگهی ای با این نام موجود است.
         /// </summary>
         public static string AdExists {
@@ -97,7 +115,7 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تلفن همراه و یا نام کاربری تکراریست!.
+        ///   Looks up a localized string similar to تلفن همراه ،ایمیل و یا نام کاربری تکراریست!.
         /// </summary>
         public static string AlreadyExists {
             get {
@@ -106,7 +124,7 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری و یا کد املاک تکراریست!.
+        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری ،ایمیل و یا کد املاک تکراریست!.
         /// </summary>
         public static string AlreadyExists2 {
             get {
@@ -219,6 +237,15 @@ namespace Common.Resources {
         public static string InvalidOperationException {
             get {
                 return ResourceManager.GetString("InvalidOperationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حساب کاربری شما فعال شده است.
+        /// </summary>
+        public static string IsActive {
+            get {
+                return ResourceManager.GetString("IsActive", resourceCulture);
             }
         }
         

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivateAccount" xml:space="preserve">
+    <value>جهت فعالسازی حساب کاربری خود رو لینک زیر کلیک کنید</value>
+  </data>
+  <data name="ActivateAccountSubject" xml:space="preserve">
+    <value>فعالسازی حساب کاربری</value>
+  </data>
   <data name="AdExists" xml:space="preserve">
     <value>آگهی ای با این نام موجود است</value>
   </data>
@@ -130,10 +136,10 @@
     <value>سن نباید کمتر از 18 باشد</value>
   </data>
   <data name="AlreadyExists" xml:space="preserve">
-    <value>تلفن همراه و یا نام کاربری تکراریست!</value>
+    <value>تلفن همراه ،ایمیل و یا نام کاربری تکراریست!</value>
   </data>
   <data name="AlreadyExists2" xml:space="preserve">
-    <value>تلفن همراه ، نام کاربری و یا کد املاک تکراریست!</value>
+    <value>تلفن همراه ، نام کاربری ،ایمیل و یا کد املاک تکراریست!</value>
   </data>
   <data name="ConfirmVisit" xml:space="preserve">
     <value>تایید درخواست بازدید از ملک</value>
@@ -170,6 +176,9 @@
   </data>
   <data name="InvalidOperationException" xml:space="preserve">
     <value>The response has already started, the http status code middleware will not be executed.</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>حساب کاربری شما فعال شده است</value>
   </data>
   <data name="IsExists" xml:space="preserve">
     <value>تکراری میباشد</value>

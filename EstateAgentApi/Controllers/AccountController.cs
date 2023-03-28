@@ -17,6 +17,7 @@ using Common.Utilities;
 using Services.Interfaces.Services;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Entities.Common.Dtos;
 
 namespace EstateAgentApi.Controllers
 {
@@ -100,6 +101,35 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
+
+        [HttpPost]
+        [SwaggerOperation("فعال سازی حساب کاربری")]
+        [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> ActivateUser(Guid guid, CancellationToken cancellationToken)
+        {
+            var result = await _acc.ActivateUser(guid, cancellationToken);
+
+            return APIResponse(result);
+
+        }
+
+        [HttpPost]
+        [SwaggerOperation(" فعال سازی حساب کاربری مدت ها بعد از ثبت نام")]
+        [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendActivationAfterLongtime(string username, CancellationToken cancellationToken)
+        {
+            var result = await _acc.SendActivationAfterLongtime(username, cancellationToken);
+
+            return APIResponse(result);
+
+        }
+
         [HttpPost]
         [SwaggerOperation("ارسال کد بازیابی")]
         [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
@@ -139,6 +169,6 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
-       
+   
     }
 }
