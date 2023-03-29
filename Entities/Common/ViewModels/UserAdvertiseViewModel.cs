@@ -46,7 +46,7 @@ namespace Entities.Common.ViewModels
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
         public bool HasGarage { get; set; }
-
+        public List<IFormFile> AdvertisePhotos { get; set; }
 
     }
 

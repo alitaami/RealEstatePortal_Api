@@ -2,6 +2,7 @@
 using Common.Utilities;
 using Data;
 using Data.Repositories;
+using DocumentFormat.OpenXml.Vml;
 using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
@@ -9,6 +10,7 @@ using Entities.Models.User;
 using Entities.Models.User.Advertises;
 using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Path = System.IO.Path;
 
 namespace Services.Interfaces.Services
 {
@@ -30,8 +33,10 @@ namespace Services.Interfaces.Services
         private IRepository<UserAdvertises> _repoAd;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
         private IRepository<AdvertiseVisitRequests> _repoReq;
+        private IRepository<AdvertiseImages> _repoIm;
+        private IWebHostEnvironment _env;
         private readonly IJwtService _jwtService;
-        public UserService(ILogger<UserService> logger, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
+        public UserService(ILogger<UserService> logger, IRepository<AdvertiseImages> repoIm, IWebHostEnvironment env, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
         {
             _repo = repository;
             _repoUR = repoUR;
@@ -40,6 +45,8 @@ namespace Services.Interfaces.Services
             _repoAd = repoad;
             _repoAv = repoav;
             _repoReq = repoReq;
+            _repoIm = repoIm;
+            _env = env;
         }
 
         #region User Panel
@@ -221,7 +228,7 @@ namespace Services.Interfaces.Services
         #endregion
 
         #region  Advertises Of User
-        public async Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModel ua, int userId, CancellationToken cancellationToken)
+        public async Task<ServiceResult> CreateAdvertise([FromForm] UserAdvertiseViewModel ua, int userId, CancellationToken cancellationToken)
         {
             try
             {
@@ -252,6 +259,7 @@ namespace Services.Interfaces.Services
                     u.RoomCount = ua.RoomCount;
                     u.DespositPrice = null;
                     u.RentPrice = null;
+                    u.BuildingType = ua.BuildingType;
                     u.HasBalcony = ua.HasBalcony;
                     u.HasElevator = ua.HasElevator;
                     u.HasWarehouse = ua.HasWarehouse;
@@ -275,6 +283,7 @@ namespace Services.Interfaces.Services
                     u.DespositPrice = ua.DespositPrice;
                     u.RentPrice = ua.RentPrice;
                     u.HasBalcony = ua.HasBalcony;
+                    u.BuildingType = ua.BuildingType;
                     u.HasElevator = ua.HasElevator;
                     u.HasWarehouse = ua.HasWarehouse;
                     u.HasGarage = ua.HasGarage;
@@ -285,9 +294,32 @@ namespace Services.Interfaces.Services
 
                 await _repoAd.AddAsync(u, cancellationToken);
 
-                if (u.ForSale)
+                foreach (var file in ua.AdvertisePhotos)
                 {
+                    // Generate a unique file name and path
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string filePath = Path.Combine(_env.WebRootPath, "AdvertiseImages", fileName);
 
+                    // Save the file to the wwwroot/images folder
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    // Add the files to the database
+                    var advImages = new AdvertiseImages
+                    {
+                        FilePath = filePath,
+                        FileName = fileName,
+                        AdvertiseId = u.Id,
+                        UserId = u.UserId
+                    }; 
+
+                    await _repoIm.AddAsync(advImages, cancellationToken);
+                }
+               
+                if (u.ForSale)
+                { 
                     var result = new UserAdvertiseDto.SaleAdvertiseDto
                     {
                         AdvertiserName = ua.AdvertiserName,
@@ -482,6 +514,7 @@ namespace Services.Interfaces.Services
                     uAd.ForSale = true;
                     uAd.RentPrice = null;
                     uAd.HasBalcony = ua.HasBalcony;
+                    uAd.BuildingType = ua.BuildingType;
                     uAd.HasElevator = ua.HasElevator;
                     uAd.HasWarehouse = ua.HasWarehouse;
                     uAd.HasGarage = ua.HasGarage;
@@ -505,6 +538,7 @@ namespace Services.Interfaces.Services
                     uAd.HasBalcony = ua.HasBalcony;
                     uAd.HasElevator = ua.HasElevator;
                     uAd.HasWarehouse = ua.HasWarehouse;
+                    uAd.BuildingType = ua.BuildingType;
                     uAd.HasGarage = ua.HasGarage;
                     uAd.Description = ua.Description;
                     uAd.CreatedDate = DateTimeOffset.Now;
@@ -837,35 +871,35 @@ namespace Services.Interfaces.Services
         }
         public async Task<string> GetUserEmail(int userId)
         {
-           
-                ValidateModel(userId);
 
-                var result = await _repo.Entities
-                    .Where(u => u.Id == userId)
-                    .FirstOrDefaultAsync();
+            ValidateModel(userId);
 
-                if (result is null)
-                    return null;///
+            var result = await _repo.Entities
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
 
-                var email = result.Email;
+            if (result is null)
+                return null;///
 
-                return email;
-          
+            var email = result.Email;
+
+            return email;
+
         }
         public async Task<string> GetAdvertiseName(int advetiseId)
-        { 
-                ValidateModel(advetiseId);
+        {
+            ValidateModel(advetiseId);
 
-                var result = await _repoAd.Entities
-                    .Where(u => u.Id == advetiseId)
-                    .FirstOrDefaultAsync();
+            var result = await _repoAd.Entities
+                .Where(u => u.Id == advetiseId)
+                .FirstOrDefaultAsync();
 
-                if (result is null)
-                    return null;///
+            if (result is null)
+                return null;///
 
-                var advName = result.AdvertiseText;
+            var advName = result.AdvertiseText;
 
-                return advName;
+            return advName;
         }
 
         #endregion

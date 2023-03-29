@@ -109,11 +109,11 @@ namespace WebApiCourse.Controllers.v1
         /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ایجاد آگهی")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateAdvertise(UserAdvertiseViewModel ad, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]   
+        public virtual async Task<IActionResult> CreateAdvertise([FromForm] UserAdvertiseViewModel ad, CancellationToken cancellationToken)
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

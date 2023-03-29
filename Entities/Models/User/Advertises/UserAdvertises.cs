@@ -45,7 +45,7 @@ namespace Entities.Models.User.Advertises
         public BuildingTypeEnum BuildingType { get; set; }
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public bool HasGarage { get; set; }
         public bool HasElevator { get; set; }
         public bool HasBalcony { get; set; }
@@ -54,13 +54,12 @@ namespace Entities.Models.User.Advertises
         public DateTimeOffset CreatedDate { get; set; }
         public bool IsConfirm { get; set; }
 
-
         #region relations
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-
         public List<AdvertiseAvailableVisitDays> AdvertiseAvailableVisitDays { get; set; }
+        public   List<AdvertiseImages> AdvertiseImages { get; set; }
 
         #endregion
 

@@ -175,6 +175,7 @@ namespace Services.Interfaces.Services
                     uAd.RentPrice = null;
                     uAd.HasBalcony = ua.HasBalcony;
                     uAd.HasElevator = ua.HasElevator;
+                    uAd.BuildingType = ua.BuildingType;
                     uAd.HasWarehouse = ua.HasWarehouse;
                     uAd.HasGarage = ua.HasGarage;
                     uAd.Description = ua.Description;
@@ -197,6 +198,7 @@ namespace Services.Interfaces.Services
                     uAd.RoomCount = ua.RoomCount;
                     uAd.HasBalcony = ua.HasBalcony;
                     uAd.HasElevator = ua.HasElevator;
+                    uAd.BuildingType = ua.BuildingType;
                     uAd.HasWarehouse = ua.HasWarehouse;
                     uAd.HasGarage = ua.HasGarage;
                     uAd.Description = ua.Description;
@@ -299,6 +301,7 @@ namespace Services.Interfaces.Services
                     u.RentPrice = null;
                     u.HasBalcony = ua.HasBalcony;
                     u.HasElevator = ua.HasElevator;
+                    u.BuildingType = ua.BuildingType;
                     u.HasWarehouse = ua.HasWarehouse;
                     u.HasGarage = ua.HasGarage;
                     u.Description = ua.Description;
@@ -324,6 +327,7 @@ namespace Services.Interfaces.Services
                     u.HasElevator = ua.HasElevator;
                     u.HasWarehouse = ua.HasWarehouse;
                     u.HasGarage = ua.HasGarage;
+                    u.BuildingType = ua.BuildingType;
                     u.Description = ua.Description;
                     u.CreatedDate = DateTimeOffset.Now;
                     u.IsConfirm = ua.IsConfirm;
