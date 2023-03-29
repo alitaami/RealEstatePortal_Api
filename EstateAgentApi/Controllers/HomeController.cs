@@ -31,7 +31,7 @@ namespace EstateAgentApi.Controllers
         }
     
         /// <summary>
-        /// 
+        /// Get all advertises
         /// </summary>
         /// <param name="pageId"></param>
         /// <param name="advertiseText"></param>
@@ -75,7 +75,11 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         } 
-        
+        /// <summary>
+        /// Get available visit days of an advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("روزهای بازدید از ملک")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -89,7 +93,12 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }  
-        
+        /// <summary>
+        /// Send request to visit advertise (need authorization)
+        /// </summary>
+        /// <param name="dayOfWeek"></param>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ثبت درخواست بازدید")]
         [Consumes(MediaTypeNames.Application.Json)]

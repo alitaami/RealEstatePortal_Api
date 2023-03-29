@@ -21,7 +21,7 @@ using Entities.Models.User.Roles;
 namespace EstateAgentApi.Controllers
 {
     /// <summary>
-    /// 
+    /// All methods need authorization 
     /// </summary>
     [SwaggerTag("سرویس های صفحه اصلی")]
     [Authorize(Roles = "3")]
@@ -40,13 +40,25 @@ namespace EstateAgentApi.Controllers
             _admin = admin;
         }
      
+        /// <summary>
+        /// Get all advertises
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="advertiseText"></param>
+        /// <param name="homeAddress"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="saleType"></param>
+        /// <param name="startprice"></param>
+        /// <param name="endprice"></param>
+        /// <param name="startrentprice"></param>
+        /// <param name="endrentprice"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UserAdvertisesForHomePage), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        
         public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var result = await _admin.GetAllAdvertises(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice);
@@ -54,6 +66,12 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Create new advertise
+        /// </summary>
+        /// <param name="ad"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ایجاد آگهی")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -70,13 +88,19 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Update advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <param name="ua"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("آپدیت آگهی")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UserRoles), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> UpdateAdvertise(int advertiseId, UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
         {
             var result = await _admin.UpdateAdvertise(advertiseId, ua, cancellationToken);
@@ -84,6 +108,12 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Add roles to users
+        /// </summary>
+        /// <param name="SelectedRoles"></param>
+        /// <param name="userid"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("نسبت دادن نقش یوزر")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -97,19 +127,29 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
+
+        /// <summary>
+        /// Edit roles of users
+        /// </summary>
+        /// <param name="SelectedRoles"></param>
+        /// <param name="userid"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("آپدیت نقش کاربر")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UserRoles), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> EditRolesToUser(List<int> SelectedRoles, int userid)
         {
             var result = await _admin.EditRolesUser(SelectedRoles, userid);
 
             return APIResponse(result);
         }
+        /// <summary>
+        /// Get roles
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست نقش ها")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -122,6 +162,11 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
+        /// <summary>
+        /// Create role
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ایجاد نقش")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -134,6 +179,13 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
+
+        /// <summary>
+        /// Update role
+        /// </summary>
+        /// <param name="roleId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("آپدیت نقش ")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -146,7 +198,14 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Get users
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="fullName"></param>
+        /// <param name="phoneNumber"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست کاربران ")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -159,7 +218,11 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Create user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ایجاد کاربر")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -172,14 +235,18 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Update user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("آپدیت کاربر ")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(EditUserViewModelFromAdmin), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> EditUser(EditUserViewModelFromAdmin user,int userId)
         {
             var result = await _admin.EditUser(user, userId);

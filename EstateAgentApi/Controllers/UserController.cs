@@ -20,7 +20,7 @@ using Entities.Models.User.Advertises;
 namespace WebApiCourse.Controllers.v1
 {
     /// <summary>
-    /// 
+    /// All methods need authorization 
     /// </summary>
     [SwaggerTag("لیست سرویسهای  کاربر")]
     [Authorize]
@@ -86,14 +86,12 @@ namespace WebApiCourse.Controllers.v1
         /// <param name="ua"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-
         [HttpPut]
         [SwaggerOperation("آپدیت ادمین املاک")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> UpdateEsteAgentInfo(EstateAgentPanelViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -102,10 +100,9 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-
-
+         
         /// <summary>
-        ///  Creating advertises by EstateAgent
+        ///  Creating advertises by users
         /// </summary>
         /// <param name="ad"></param>
         /// <param name="cancellationToken"></param>
@@ -127,7 +124,7 @@ namespace WebApiCourse.Controllers.v1
         }
 
         /// <summary>
-        /// 
+        /// Get advertises of authenticated user
         /// </summary>
         /// <param name="pageId"></param>
         /// <param name="advertiseText"></param>
@@ -156,7 +153,7 @@ namespace WebApiCourse.Controllers.v1
         }
 
         /// <summary>
-        /// Update advertise
+        /// Update advertise of authenticated user
         /// </summary>
         /// <param name="advertiseId"></param>
         /// <param name="ua"></param>
@@ -168,7 +165,6 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> UpdateAdvertiseOfUser(int advertiseId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -179,7 +175,7 @@ namespace WebApiCourse.Controllers.v1
         }
 
         /// <summary>
-        /// Delete advertise (** IsDelete == True **)
+        /// Delete advertise of authenticated user (** IsDelete == True **)
         /// </summary>
         /// <param name="advertiseId"></param>
         /// <param name="cancellationToken"></param>
@@ -200,6 +196,11 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Get available visit days for an advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("دریافت روزهای بازدید حضوری")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -215,7 +216,12 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Add available visit days for an advertise
+        /// </summary>
+        /// <param name="SelectedDays"></param>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("افزودن روزهای بازدید حضوری")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -232,13 +238,18 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+        /// <summary>
+        ///  Edit available visit days for an advertise
+        /// </summary>
+        /// <param name="SelectedDays"></param>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("ویرایش روزهای بازدید حضوری")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -247,7 +258,11 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Get all requests of advertises by advertiser
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("دریافت درخواست های بازدید حضوری")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -255,7 +270,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
 
-        public async Task<IActionResult> AdvertiserGetRequestsForVisit(int advertiseId)
+        public async Task<IActionResult> GetRequestsForVisitByAdvertiser(int advertiseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -263,7 +278,11 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-
+        /// <summary>
+        /// Accept or Reject requests of advertises by advertiser
+        /// </summary>
+        /// <param name="reqId"></param>
+        /// <returns></returns>
         [HttpPut]
         [SwaggerOperation("تایید یا عدم تایید درخواست ها")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -271,7 +290,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
 
-        public async Task<IActionResult> AdvertiserConfirmRequestsForVisit(int reqId)
+        public async Task<IActionResult> ConfirmOrRejectRequestsForVisitByAdvertiser(int reqId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -280,13 +299,16 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Get all requests those have been sent by user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("درخواست های ارسال شده")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> UserRequestsForVisit()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -296,8 +318,13 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Delete  requests those have been sent by user 
+        /// </summary>
+        /// <param name="reqId"></param>
+        /// <returns></returns>
         [HttpPut]
-        [SwaggerOperation("تایید یا عدم تایید درخواست ها")]
+        [SwaggerOperation("حذف درخواست ارسال شده")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AdvertiseVisitRequests), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]

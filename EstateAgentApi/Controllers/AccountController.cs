@@ -62,7 +62,7 @@ namespace EstateAgentApi.Controllers
 
 
         /// <summary>
-        /// SignUp for Estates By EstateAgent
+        /// SignUp for Estates 
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -101,7 +101,12 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
-
+        /// <summary>
+        /// Activate Account
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("فعال سازی حساب کاربری")]
         [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
@@ -115,7 +120,12 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
-
+        /// <summary>
+        /// another Activate section,if you wanna activate after a long time 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation(" فعال سازی حساب کاربری مدت ها بعد از ثبت نام")]
         [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
@@ -129,7 +139,12 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
-
+        /// <summary>
+        /// Forget password section
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ارسال کد بازیابی")]
         [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
@@ -143,6 +158,13 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
+
+        /// <summary>
+        /// Checking the recovery code after get code from email
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("بررسی کدبازیابی")]
         [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
@@ -156,6 +178,13 @@ namespace EstateAgentApi.Controllers
             return APIResponse(result);
 
         }
+        /// <summary>
+        /// Assign new password
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("بازیابی رمزعبور")]
         [ProducesResponseType(typeof(UserForgetPassword), (int)HttpStatusCode.OK)]
