@@ -403,7 +403,7 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حساب کاربری فعال نیست.
+        ///   Looks up a localized string similar to حساب کاربری شما فعال نیست.
         /// </summary>
         public static string UserIsNotActive {
             get {

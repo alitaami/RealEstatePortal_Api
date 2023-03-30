@@ -65,6 +65,14 @@ namespace Services.Interfaces.Services
 
                 await _repo.AddAsync(u, cancellationToken);
 
+                var userRole = new UserRoles
+                {
+                    RoleId = 2,
+                    UserId = u.Id
+                };
+
+                _repoUR.Add(userRole);
+
                 #region send email
                 var email = u.Email;
                 string body = Resource.ActivateAccount + "<p>" + "https://localhost:7076/api/Account/ActivateUser?guid=" + u.ActivationGuid + "</p>";
@@ -115,6 +123,14 @@ namespace Services.Interfaces.Services
                 };
 
                 await _repo.AddAsync(u, cancellationToken);
+              
+                var userRole = new UserRoles
+                {
+                    RoleId = 1,
+                    UserId = u.Id
+                };
+
+                _repoUR.Add(userRole);
 
                 #region send email
                 var email = u.Email;
@@ -153,6 +169,9 @@ namespace Services.Interfaces.Services
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
+                if(!result.IsActive)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.UserIsNotActive, null);///
+                 
                 result.LastLoginDate = DateTimeOffset.Now;
                 _repo.Update(result);
 
@@ -291,7 +310,7 @@ namespace Services.Interfaces.Services
 
                 if (user.IsActive)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.IsActive, null);///
- 
+
                 user.IsActive = true;
                 user.ActivationGuid = Guid.NewGuid();
 
@@ -327,7 +346,7 @@ namespace Services.Interfaces.Services
 
                 await SendMail.SendAsync(email, Resource.ActivateAccountSubject, body);
                 #endregion
-  
+
                 return Ok(user);
 
             }

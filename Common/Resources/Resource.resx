@@ -232,7 +232,7 @@
     <value>دسترسی به این بخش بدون احراز هویت امکان پذیر نیست</value>
   </data>
   <data name="UserIsNotActive" xml:space="preserve">
-    <value>حساب کاربری فعال نیست</value>
+    <value>حساب کاربری شما فعال نیست</value>
   </data>
   <data name="UserRequestError" xml:space="preserve">
     <value>ایجاد کننده آگهی نمیتواند برای آگهی خود درخواست بازدید بفرستد</value>

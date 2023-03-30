@@ -120,7 +120,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> GetUserInfo(int userId, CancellationToken cancellationToken)
         {
             try
@@ -526,6 +525,13 @@ namespace Services.Interfaces.Services
         }
         public async Task<ServiceResult> GetAdvertiseImagesOfUser(int advertiseId, int userId)
         {
+            var advertise = _repoAd.TableNoTracking
+                .Where(u=>u.Id == advertiseId)
+                .FirstOrDefault();
+
+            if(advertise is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
             var images = _repoIm.TableNoTracking
                 .Where(u => u.AdvertiseId == advertiseId && u.UserId == userId).ToList();
 

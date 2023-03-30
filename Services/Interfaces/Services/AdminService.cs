@@ -177,6 +177,13 @@ namespace Services.Interfaces.Services
         }
         public async Task<ServiceResult> GetAdvertiseImages(int advertiseId)
         {
+            var advertise = _repoAd.TableNoTracking
+                .Where(u => u.Id == advertiseId)
+                .FirstOrDefault();
+
+            if (advertise is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+             
             var images = _repoIm.TableNoTracking
                 .Where(u => u.AdvertiseId == advertiseId).ToList();
 
