@@ -340,6 +340,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to چنین دسترسی ای برای شما تعریف نشده است.
+        /// </summary>
+        public static string RoleDoesNotMatchUser {
+            get {
+                return ResourceManager.GetString("RoleDoesNotMatchUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نقش وارد شده تکراری میباشد.
         /// </summary>
         public static string RoleExist {

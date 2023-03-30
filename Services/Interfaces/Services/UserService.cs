@@ -63,11 +63,18 @@ namespace Services.Interfaces.Services
                 if (u is null)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
 
+                #region RoleCheck
+                /// we have authorize(Roles) attribute on method in controller; but i wrote this code for check IsDelete of Role
                 var userRole = await _repoUR.TableNoTracking.Where(u => u.UserId == userId).FirstOrDefaultAsync();
 
-                if (userRole.RoleId == 2)
-                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
+                if (userRole == null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
+                var roleCheck = _repoR.TableNoTracking.Any(u => u.Id == userRole.RoleId && !u.IsDelete);
+
+                if (userRole.RoleId == 2 || !roleCheck)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleDoesNotMatchUser, null);///
+                #endregion
 
                 if (user.OldPassword == "" || user.NewPassword == "" || user.RePassword == "")
                 {
@@ -171,7 +178,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> UpdateUserInfo(int userId, UserPanelViewModel user, CancellationToken cancellationToken)
         {
             try
@@ -183,11 +189,18 @@ namespace Services.Interfaces.Services
                 if (u is null)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
 
+                #region RoleCheck
+                /// we have authorize(Roles) attribute on method in controller; but i wrote this code for check IsDelete of Role
                 var userRole = await _repoUR.TableNoTracking.Where(u => u.UserId == userId).FirstOrDefaultAsync();
 
-                if (userRole.RoleId == 1)
-                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.GeneralErrorTryAgain, null);///
+                if (userRole == null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
+                var roleCheck = _repoR.TableNoTracking.Any(u => u.Id == userRole.RoleId && !u.IsDelete);
+
+                if (userRole.RoleId == 1 || !roleCheck)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleDoesNotMatchUser, null);///
+                #endregion
 
                 if (user.OldPassword == "" || user.NewPassword == "" || user.RePassword == "")
                 {

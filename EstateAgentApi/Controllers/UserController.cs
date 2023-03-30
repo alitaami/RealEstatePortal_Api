@@ -48,7 +48,6 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(EstateAgentDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
         public async Task<IActionResult> GetUserInfo(CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -70,8 +69,8 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-
-        public async Task<IActionResult> UpdateUserInfo(UserPanelViewModel ua, CancellationToken cancellationToken)
+        [Authorize(Roles = "2")]
+         public async Task<IActionResult> UpdateUserInfo(UserPanelViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -92,6 +91,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> UpdateEsteAgentInfo(EstateAgentPanelViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

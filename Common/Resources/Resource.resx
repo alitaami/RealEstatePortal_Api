@@ -210,6 +210,9 @@
   <data name="RequestVisit" xml:space="preserve">
     <value>درخواست بازدید از ملک</value>
   </data>
+  <data name="RoleDoesNotMatchUser" xml:space="preserve">
+    <value>چنین دسترسی ای برای شما تعریف نشده است</value>
+  </data>
   <data name="RoleExist" xml:space="preserve">
     <value>نقش وارد شده تکراری میباشد</value>
   </data>
