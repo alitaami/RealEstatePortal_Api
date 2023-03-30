@@ -2,6 +2,7 @@
 using Entities.Base;
 using Entities.Common.ViewModels;
 using Entities.Models.User.Advertises;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,11 @@ namespace Services.Interfaces
     public interface IAdminService
     {
         public Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0);
-        public Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModelForAdmin ua, int userId, CancellationToken cancellationToken);
-        public Task<ServiceResult> UpdateAdvertise(int advertiseId, UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken);
+        public Task<ServiceResult> GetAdvertiseImages(int advertiseId);
+        public Task<ServiceResult> CreateAdvertise([FromForm] UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken);
+        public Task<ServiceResult> UpdateAdvertise(int advertiseId, UserUpdateAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken);
+        public Task<ServiceResult> UpdateAdvertiseImage(int fileId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken);
+        public Task<ServiceResult> DeleteAdvertiseImage(int fileId, CancellationToken cancellationToken);
         public Task<ServiceResult> AddRolesToUser(List<int> SelectedRoles, int userid);
         public Task<ServiceResult> EditRolesUser(List<int> SelectedRoles, int userid);
         //public Task<ServiceResult> GetUserRoles(int userid);

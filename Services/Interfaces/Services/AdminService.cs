@@ -21,6 +21,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Entities.Common.Dtos.UserAdvertiseDto;
 
 namespace Services.Interfaces.Services
 {
@@ -31,9 +32,10 @@ namespace Services.Interfaces.Services
         private IRepository<Role> _repoR;
         private IRepository<UserAdvertises> _repoAd;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
+        private IRepository<AdvertiseImages> _repoIm;
         private IRepository<AdvertiseVisitRequests> _repoReq;
 
-        public AdminService(ILogger<AdminService> logger, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
+        public AdminService(ILogger<AdminService> logger, IRepository<AdvertiseImages>  repoIm, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
         {
             _repo = repository;
             _repoUR = repoUR;
@@ -41,6 +43,7 @@ namespace Services.Interfaces.Services
             _repoAd = repoad;
             _repoAv = repoav;
             _repoReq = repoReq;
+            _repoIm = repoIm;
         }
 
         #region Advertise Section
@@ -112,30 +115,51 @@ namespace Services.Interfaces.Services
                 int skip = (pageId - 1) * take;
 
 
-                int pagecount = result.Select(c => new UserAdvertisesForHomePage()
+                int pagecount = result.Select(c => new UserAdvertiseDto.AdvertiseDto()
                 {
-
                     AdvertiseId = c.Id,
-                    AdvertiseTitle = c.AdvertiseText,
+                    AdvertiseText = c.AdvertiseText,
                     AdvertiserName = c.AdvertiserName,
-                    AdvertiserPhone = c.AdvertiserNumber,
+                    AdvertiserNumber = c.AdvertiserNumber,
+                    Meterage = c.Meterage,
+                    PricePerMeter = c.PricePerMeter,
+                    RoomCount = c.RoomCount,
                     ForSale = c.ForSale,
                     DespositPrice = c.DespositPrice,
                     RentPrice = c.RentPrice,
-                    Price = c.TotalPrice
+                    TotalPrice = c.TotalPrice,
+                    BuildingType = c.BuildingType,
+                    HomeAddress = c.HomeAddress,
+                    HasBalcony = c.HasBalcony,
+                    HasElevator = c.HasElevator,
+                    HasGarage = c.HasGarage,
+                    HasWarehouse = c.HasWarehouse,
+                    Description = c.Description,
+                    CreatedDate = c.CreatedDate
 
                 }).Count() / take;
 
-                var query = result.Select(c => new UserAdvertisesForHomePage()
+                var query = result.Select(c => new UserAdvertiseDto.AdvertiseDto()
                 {
                     AdvertiseId = c.Id,
-                    AdvertiseTitle = c.AdvertiseText,
+                    AdvertiseText = c.AdvertiseText,
                     AdvertiserName = c.AdvertiserName,
-                    AdvertiserPhone = c.AdvertiserNumber,
+                    AdvertiserNumber = c.AdvertiserNumber,
+                    Meterage = c.Meterage,
+                    PricePerMeter = c.PricePerMeter,
+                    RoomCount = c.RoomCount,
                     ForSale = c.ForSale,
                     DespositPrice = c.DespositPrice,
                     RentPrice = c.RentPrice,
-                    Price = c.TotalPrice
+                    TotalPrice = c.TotalPrice,
+                    BuildingType = c.BuildingType,
+                    HomeAddress = c.HomeAddress,
+                    HasBalcony = c.HasBalcony,
+                    HasElevator = c.HasElevator,
+                    HasGarage = c.HasGarage,
+                    HasWarehouse = c.HasWarehouse,
+                    Description = c.Description,
+                    CreatedDate = c.CreatedDate
 
                 }).Skip(skip).Take(take).ToList();
 
@@ -151,7 +175,33 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-        public async Task<ServiceResult> UpdateAdvertise(int advertiseId, UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
+        public async Task<ServiceResult> GetAdvertiseImages(int advertiseId)
+        {
+            var images = _repoIm.TableNoTracking
+                .Where(u => u.AdvertiseId == advertiseId).ToList();
+
+            if (images.Count == 0 && images is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            var showImagesList = new List<AdvertiseImagesDto>();
+
+            foreach (var image in images)
+            {
+                var showImages = new AdvertiseImagesDto
+                {
+                    FileId = image.Id,
+                    FileName = image.FileName,
+                    FilePath = image.FilePath
+                };
+                showImagesList.Add(showImages);
+            }
+
+            if (showImagesList is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            return Ok(showImagesList);
+        }
+        public async Task<ServiceResult> UpdateAdvertise(int advertiseId, UserUpdateAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
         {
             try
             {
@@ -268,7 +318,82 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-        public async Task<ServiceResult> CreateAdvertise(UserAdvertiseViewModelForAdmin ua, int userId, CancellationToken cancellationToken)
+        public async Task<ServiceResult> UpdateAdvertiseImage(int fileId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var uIm = await _repoIm
+                    .TableNoTracking
+                    .Where(u => u.Id == fileId ).FirstOrDefaultAsync(cancellationToken);
+
+                if (uIm is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (image.AdvertisePhotos is null)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.ImageRequired, null);///
+
+                string ImageDeletepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+                if (File.Exists(ImageDeletepath))
+                {
+                    File.Delete(ImageDeletepath);
+                }
+                uIm.FileName = Guid.NewGuid().ToString() + Path.GetExtension(image.AdvertisePhotos.FileName);
+                uIm.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+
+                // Save the file to the wwwroot/images folder
+                using (var stream = new FileStream(uIm.FilePath, FileMode.Create))
+                {
+                    await image.AdvertisePhotos.CopyToAsync(stream);
+                }
+                _repoIm.Update(uIm);
+
+                var advImages = new AdvertiseImages
+                {
+                    FilePath = uIm.FilePath,
+                    FileName = uIm.FileName,
+                    AdvertiseId = uIm.Id,
+                    UserId = uIm.UserId
+                };
+                return Ok(uIm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> DeleteAdvertiseImage(int fileId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var uIm = await _repoIm
+                    .TableNoTracking
+                    .Where(u => u.Id == fileId ).FirstOrDefaultAsync(cancellationToken);
+
+                if (uIm is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                string ImageDeletepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+                if (File.Exists(ImageDeletepath))
+                {
+                    File.Delete(ImageDeletepath);
+                }
+
+                _repoIm.Delete(uIm);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> CreateAdvertise([FromForm]UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
         {
             try
             {
@@ -283,11 +408,14 @@ namespace Services.Interfaces.Services
                 if (ud != null)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.AdExists, null);///
 
+                if(!_repo.TableNoTracking.Any(u=>u.Id == ua.UserId))
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
                 //var EstateAgent = await _repo.GetByIdAsync(cancellationToken, userId);
 
                 if (ua.ForSale)
                 {
-                    u.UserId = userId;
+                    u.UserId = ua.UserId;
                     u.AdvertiseText = ua.AdvertiseText;
                     u.AdvertiserName = ua.AdvertiserName;
                     u.AdvertiserNumber = ua.AdvertiserNumber;
@@ -311,7 +439,7 @@ namespace Services.Interfaces.Services
                 }
                 else
                 {
-                    u.UserId = userId;
+                    u.UserId = ua.UserId;
                     u.AdvertiseText = ua.AdvertiseText;
                     u.AdvertiserName = ua.AdvertiserName;
                     u.AdvertiserNumber = ua.AdvertiserNumber;
@@ -336,6 +464,32 @@ namespace Services.Interfaces.Services
 
                 await _repoAd.AddAsync(u, cancellationToken);
 
+                foreach (var file in ua.AdvertisePhotos)
+                {
+                    if (file is null)
+                        return BadRequest(ErrorCodeEnum.BadRequest, Resource.ImageRequired, null);///
+
+                    // Generate a unique file name and path
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", fileName);
+
+                    // Save the file to the wwwroot/images folder
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    // Add the files to the database
+                    var advImages = new AdvertiseImages
+                    {
+                        FilePath = filePath,
+                        FileName = fileName,
+                        AdvertiseId = u.Id,
+                        UserId = u.UserId
+                    };
+
+                    await _repoIm.AddAsync(advImages, cancellationToken);
+                }
                 if (u.ForSale)
                 {
 

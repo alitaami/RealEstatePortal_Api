@@ -31,10 +31,11 @@ namespace Services.Interfaces.Services
         private IRepository<Role> _repoR;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
         private IRepository<AdvertiseVisitRequests> _repoReq;
+        private IRepository<AdvertiseImages> _repoIm;
         ILogger<AdvertiseService> _logger;
         private readonly IUserService _user;
 
-        public AdvertiseService(ILogger<AdvertiseService> logger, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
@@ -44,6 +45,7 @@ namespace Services.Interfaces.Services
             _repoAv = repoav;
             _repoReq = req;
             _user = user;
+            _repoIm = repoIm;
         }
 
         #region public
@@ -122,7 +124,6 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-
         public async Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             try
@@ -230,7 +231,32 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+        public async Task<ServiceResult> GetAdvertiseImages(int advertiseId)
+        {
+            var images = _repoIm.TableNoTracking
+                .Where(u => u.AdvertiseId == advertiseId).ToList();
 
+            if (images.Count == 0 && images is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            var showImagesList = new List<AdvertiseImagesDto>();
+
+            foreach (var image in images)
+            {
+                var showImages = new AdvertiseImagesDto
+                {
+                    FileId = image.Id,
+                    FileName = image.FileName,
+                    FilePath = image.FilePath
+                };
+                showImagesList.Add(showImages);
+            }
+
+            if (showImagesList is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            return Ok(showImagesList);
+        }
         public async Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId)
         {
             try
@@ -252,7 +278,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> RequestForAdvertiseVisit(int dayOfWeek, int advertiseId, int userId, string fullName)
         {
             try

@@ -14,6 +14,7 @@ using Entities.Models.User.Advertises;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using Common.Utilities;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace EstateAgentApi.Controllers
 {
@@ -74,7 +75,25 @@ namespace EstateAgentApi.Controllers
             var result = await _Ad.GetAdveriseForShow(advertiseId);
 
             return APIResponse(result);
-        } 
+        }
+         /// <summary>
+         /// Show images of advertise
+         /// </summary>
+         /// <param name="advertiseId"></param>
+         /// <returns></returns>
+        [HttpGet]
+        [SwaggerOperation("لیست عکس های اگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseImagesDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAdvertiseImages(int advertiseId)
+        {
+            var result = await _Ad.GetAdvertiseImages(advertiseId);
+
+            return APIResponse(result);
+        }
         /// <summary>
         /// Get available visit days of an advertise
         /// </summary>

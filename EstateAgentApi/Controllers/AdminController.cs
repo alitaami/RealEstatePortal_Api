@@ -17,11 +17,12 @@ using System.Security.Claims;
 using Common.Utilities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Entities.Models.User.Roles;
+using Entities.Models.User.Advertises;
 
 namespace EstateAgentApi.Controllers
 {
     /// <summary>
-    /// All methods need authorization 
+    /// All methods need authorization and Admin role (RoleId = 3)
     /// </summary>
     [SwaggerTag("سرویس های صفحه اصلی")]
     [Authorize(Roles = "3")]
@@ -39,7 +40,8 @@ namespace EstateAgentApi.Controllers
             _repo = repo;
             _admin = admin;
         }
-     
+
+       
         /// <summary>
         /// Get all advertises
         /// </summary>
@@ -56,12 +58,30 @@ namespace EstateAgentApi.Controllers
         [HttpGet]
         [SwaggerOperation("لیست اگهی ها")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(UserAdvertisesForHomePage), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var result = await _admin.GetAllAdvertises(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice);
+
+            return APIResponse(result);
+        }
+
+        /// <summary>
+        /// Get all images of advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerOperation("لیست اگهی ها")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AdvertiseImages), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetAdvertiseImages(int advertiseId)
+        {
+            var result = await _admin.GetAdvertiseImages(advertiseId);
 
             return APIResponse(result);
         }
@@ -74,16 +94,13 @@ namespace EstateAgentApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("ایجاد آگهی")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateAdvertise(UserAdvertiseViewModelForAdmin ad, CancellationToken cancellationToken)
+        public virtual async Task<IActionResult> CreateAdvertise([FromForm] UserAdvertiseViewModelForAdmin ad, CancellationToken cancellationToken)
         {
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var result = await _admin.CreateAdvertise(ad, userId.ToInt(), cancellationToken);
+            var result = await _admin.CreateAdvertise(ad, cancellationToken);
 
             return APIResponse(result);
         }
@@ -98,16 +115,53 @@ namespace EstateAgentApi.Controllers
         [HttpPut]
         [SwaggerOperation("آپدیت آگهی")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(UserRoles), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserAdvertises), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> UpdateAdvertise(int advertiseId, UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAdvertise(int advertiseId, UserUpdateAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken)
         {
             var result = await _admin.UpdateAdvertise(advertiseId, ua, cancellationToken);
 
             return APIResponse(result);
         }
 
+        /// <summary>
+        /// Update each photo of advertise
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="image"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [SwaggerOperation("آپدیت عکس آگهی")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(AdvertiseImages), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> UpdateAdvertiseImage(int fileId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken)
+        {
+            var result = await _admin.UpdateAdvertiseImage(fileId, image, cancellationToken);
+
+            return APIResponse(result);
+        }
+        /// <summary>
+        /// Delete each photo of advertise
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [SwaggerOperation("حذف عکس آگهی")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(AdvertiseImages), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> DeleteAdvertiseImage(int fileId, CancellationToken cancellationToken)
+        {
+            var result = await _admin.DeleteAdvertiseImage(fileId, cancellationToken);
+
+            return APIResponse(result);
+        }
         /// <summary>
         /// Add roles to users
         /// </summary>
@@ -156,7 +210,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(Role), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-         public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
             var result = await _admin.GetRoles();
 
@@ -212,9 +266,9 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(EstateAgentDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-         public async Task<IActionResult> GetAllUsers(int pageId = 1, string fullName = "", string phoneNumber = "", string email = "")
+        public async Task<IActionResult> GetAllUsers(int pageId = 1, string fullName = "", string phoneNumber = "", string email = "")
         {
-            var result = await _admin.GetAllUsers(pageId,fullName,phoneNumber,email);
+            var result = await _admin.GetAllUsers(pageId, fullName, phoneNumber, email);
 
             return APIResponse(result);
         }
@@ -247,12 +301,12 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(EditUserViewModelFromAdmin), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> EditUser(EditUserViewModelFromAdmin user,int userId)
+        public async Task<IActionResult> EditUser(EditUserViewModelFromAdmin user, int userId)
         {
             var result = await _admin.EditUser(user, userId);
 
             return APIResponse(result);
         }
-    
+
     }
 }

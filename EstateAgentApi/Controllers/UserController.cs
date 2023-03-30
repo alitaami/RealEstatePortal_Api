@@ -100,7 +100,7 @@ namespace WebApiCourse.Controllers.v1
 
             return APIResponse(result);
         }
-         
+
         /// <summary>
         ///  Creating advertises by users
         /// </summary>
@@ -112,7 +112,7 @@ namespace WebApiCourse.Controllers.v1
         [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]   
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CreateAdvertise([FromForm] UserAdvertiseViewModel ad, CancellationToken cancellationToken)
         {
 
@@ -153,8 +153,28 @@ namespace WebApiCourse.Controllers.v1
         }
 
         /// <summary>
-        /// Update advertise of authenticated user
+        /// Show advertise images of user
         /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerOperation("لیست عکس های اگهی")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseImagesDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetAdvertiseImagesOfUser(int advertiseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.GetAdvertiseImagesOfUser(advertiseId, userId.ToInt());
+
+            return APIResponse(result);
+        }
+
+        /// <summary>
+        /// Update advertise of authenticated user
+        /// </summary> 
         /// <param name="advertiseId"></param>
         /// <param name="ua"></param>
         /// <param name="cancellationToken"></param>
@@ -165,7 +185,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(UserAdvertiseDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> UpdateAdvertiseOfUser(int advertiseId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAdvertiseOfUser(int advertiseId, UserUpdateAdvertiseViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -174,6 +194,48 @@ namespace WebApiCourse.Controllers.v1
             return APIResponse(result);
         }
 
+
+        /// <summary>
+        /// Update each photo of advertise
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="image"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [SwaggerOperation("آپدیت عکس آگهی")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseImagesDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> UpdateAdvertiseImageOfUser(int fileId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.UpdateAdvertiseImageOfUser(fileId, userId.ToInt(), image, cancellationToken);
+
+            return APIResponse(result);
+        }
+        /// <summary>
+        /// Delete each photo of advertise
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [SwaggerOperation("حذف عکس آگهی")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseImagesDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> DeleteAdvertiseImageOfUser(int fileId , CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _user.DeleteAdvertiseImageOfUser(fileId, userId.ToInt(), cancellationToken);
+
+            return APIResponse(result);
+        }
         /// <summary>
         /// Delete advertise of authenticated user (** IsDelete == True **)
         /// </summary>
@@ -313,7 +375,7 @@ namespace WebApiCourse.Controllers.v1
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _user.UserRequestsForVisit( userId.ToInt());
+            var result = await _user.UserRequestsForVisit(userId.ToInt());
 
             return APIResponse(result);
         }

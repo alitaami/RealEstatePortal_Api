@@ -232,6 +232,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to عکس وارد شود.
+        /// </summary>
+        public static string ImageRequired {
+            get {
+                return ResourceManager.GetString("ImageRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The response has already started, the http status code middleware will not be executed..
         /// </summary>
         public static string InvalidOperationException {

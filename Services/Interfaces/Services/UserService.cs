@@ -11,6 +11,7 @@ using Entities.Models.User.Advertises;
 using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static Entities.Common.Dtos.UserAdvertiseDto;
 using Path = System.IO.Path;
 
 namespace Services.Interfaces.Services
@@ -296,9 +298,12 @@ namespace Services.Interfaces.Services
 
                 foreach (var file in ua.AdvertisePhotos)
                 {
+                    if (file is null)
+                        return BadRequest(ErrorCodeEnum.BadRequest, Resource.ImageRequired, null);///
+
                     // Generate a unique file name and path
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string filePath = Path.Combine(_env.WebRootPath, "AdvertiseImages", fileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", fileName);
 
                     // Save the file to the wwwroot/images folder
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -313,13 +318,13 @@ namespace Services.Interfaces.Services
                         FileName = fileName,
                         AdvertiseId = u.Id,
                         UserId = u.UserId
-                    }; 
+                    };
 
                     await _repoIm.AddAsync(advImages, cancellationToken);
                 }
-               
+
                 if (u.ForSale)
-                { 
+                {
                     var result = new UserAdvertiseDto.SaleAdvertiseDto
                     {
                         AdvertiserName = ua.AdvertiserName,
@@ -447,38 +452,57 @@ namespace Services.Interfaces.Services
                 int take = 10;
                 int skip = (pageId - 1) * take;
 
-
-                int pagecount = result.Select(c => new UserAdvertisesForHomePage()
+                int pagecount = result.Select(c => new UserAdvertiseDto.AdvertiseDto()
                 {
-
                     AdvertiseId = c.Id,
-                    AdvertiseTitle = c.AdvertiseText,
+                    AdvertiseText = c.AdvertiseText,
                     AdvertiserName = c.AdvertiserName,
-                    AdvertiserPhone = c.AdvertiserNumber,
+                    AdvertiserNumber = c.AdvertiserNumber,
+                    Meterage = c.Meterage,
+                    PricePerMeter = c.PricePerMeter,
+                    RoomCount = c.RoomCount,
                     ForSale = c.ForSale,
                     DespositPrice = c.DespositPrice,
                     RentPrice = c.RentPrice,
-                    Price = c.TotalPrice
+                    TotalPrice = c.TotalPrice,
+                    BuildingType = c.BuildingType,
+                    HomeAddress = c.HomeAddress,
+                    HasBalcony = c.HasBalcony,
+                    HasElevator = c.HasElevator,
+                    HasGarage = c.HasGarage,
+                    HasWarehouse = c.HasWarehouse,
+                    Description = c.Description,
+                    CreatedDate = c.CreatedDate
 
                 }).Count() / take;
 
-                var query = result.Select(c => new UserAdvertisesForHomePage()
+                var query = result.Select(c => new UserAdvertiseDto.AdvertiseDto()
                 {
                     AdvertiseId = c.Id,
-                    AdvertiseTitle = c.AdvertiseText,
+                    AdvertiseText = c.AdvertiseText,
                     AdvertiserName = c.AdvertiserName,
-                    AdvertiserPhone = c.AdvertiserNumber,
+                    AdvertiserNumber = c.AdvertiserNumber,
+                    Meterage = c.Meterage,
+                    PricePerMeter = c.PricePerMeter,
+                    RoomCount = c.RoomCount,
                     ForSale = c.ForSale,
                     DespositPrice = c.DespositPrice,
                     RentPrice = c.RentPrice,
-                    Price = c.TotalPrice
+                    TotalPrice = c.TotalPrice,
+                    BuildingType = c.BuildingType,
+                    HomeAddress = c.HomeAddress,
+                    HasBalcony = c.HasBalcony,
+                    HasElevator = c.HasElevator,
+                    HasGarage = c.HasGarage,
+                    HasWarehouse = c.HasWarehouse,
+                    Description = c.Description,
+                    CreatedDate = c.CreatedDate
 
                 }).Skip(skip).Take(take).ToList();
 
                 var finalResult = Tuple.Create(query, pagecount);
 
                 return Ok(finalResult);
-
 
             }
             catch (Exception ex)
@@ -487,7 +511,33 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-        public async Task<ServiceResult> UpdateAdvertiseOfUser(int advertiseId, int userId, UserAdvertiseViewModel ua, CancellationToken cancellationToken)
+        public async Task<ServiceResult> GetAdvertiseImagesOfUser(int advertiseId, int userId)
+        {
+            var images = _repoIm.TableNoTracking
+                .Where(u => u.AdvertiseId == advertiseId && u.UserId == userId).ToList();
+
+            if (images.Count == 0 && images is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            var showImagesList = new List<AdvertiseImagesDto>();
+
+            foreach (var image in images)
+            {
+                var showImages = new AdvertiseImagesDto
+                {
+                    FileId = image.Id,
+                    FileName = image.FileName,
+                    FilePath = image.FilePath
+                };
+                showImagesList.Add(showImages);
+            }
+
+            if (showImagesList is null)
+                return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
+
+            return Ok(showImagesList);
+        }
+        public async Task<ServiceResult> UpdateAdvertiseOfUser(int advertiseId, int userId, UserUpdateAdvertiseViewModel ua, CancellationToken cancellationToken)
         {
             try
             {
@@ -598,6 +648,81 @@ namespace Services.Interfaces.Services
             {
                 _logger.LogError(ex, null, null);
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+            }
+        }
+        public async Task<ServiceResult> UpdateAdvertiseImageOfUser(int fileId, int userId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var uIm = await _repoIm
+                    .TableNoTracking
+                    .Where(u => u.Id == fileId && u.UserId == userId).FirstOrDefaultAsync(cancellationToken);
+
+                if (uIm is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                if (image.AdvertisePhotos is null)
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.ImageRequired, null);///
+
+                string ImageDeletepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+                if (File.Exists(ImageDeletepath))
+                {
+                    File.Delete(ImageDeletepath);
+                }
+                uIm.FileName = Guid.NewGuid().ToString() + Path.GetExtension(image.AdvertisePhotos.FileName);
+                uIm.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+
+                // Save the file to the wwwroot/images folder
+                using (var stream = new FileStream(uIm.FilePath, FileMode.Create))
+                {
+                    await image.AdvertisePhotos.CopyToAsync(stream);
+                }
+                _repoIm.Update(uIm);
+
+                var advImages = new AdvertiseImages
+                {
+                    FilePath = uIm.FilePath,
+                    FileName = uIm.FileName,
+                    AdvertiseId = uIm.Id,
+                    UserId = uIm.UserId
+                };
+                return Ok(uIm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
+            }
+        }
+        public async Task<ServiceResult> DeleteAdvertiseImageOfUser(int fileId, int userId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var uIm = await _repoIm
+                    .TableNoTracking
+                    .Where(u => u.Id == fileId && u.UserId == userId).FirstOrDefaultAsync(cancellationToken);
+
+                if (uIm is null)
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                string ImageDeletepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdvertiseImages", uIm.FileName);
+                if (File.Exists(ImageDeletepath))
+                {
+                    File.Delete(ImageDeletepath);
+                }
+
+                _repoIm.Delete(uIm);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
             }
         }
         public async Task<ServiceResult> DeleteAdvertiseOfUser(int advertiseId, int userId, CancellationToken cancellationToken)
