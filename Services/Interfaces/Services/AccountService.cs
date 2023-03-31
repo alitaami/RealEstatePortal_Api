@@ -3,20 +3,12 @@ using Common.Utilities;
 using Data.Repositories;
 using Entities.Base;
 using Entities.Common.ViewModels;
+using Entities.Models.Roles;
 using Entities.Models.User;
-using Entities.Models.User.Roles;
 using Entities.ViewModels;
 using EstateAgentApi.Services.Base;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Interfaces.Services
 {
@@ -65,13 +57,19 @@ namespace Services.Interfaces.Services
 
                 await _repo.AddAsync(u, cancellationToken);
 
-                var userRole = new UserRoles
+                if (await CheckRoleExistence(2))
                 {
-                    RoleId = 2,
-                    UserId = u.Id
-                };
+                    var userRole = new UserRoles
+                    {
+                        RoleId = 2,
+                        UserId = u.Id
+                    };
+                    _repoUR.Add(userRole);
+                }
 
-                _repoUR.Add(userRole);
+                else
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleNotFound, null);///
+
 
                 #region send email
                 var email = u.Email;
@@ -90,7 +88,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> EstateAgentSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
         {
             try
@@ -123,14 +120,19 @@ namespace Services.Interfaces.Services
                 };
 
                 await _repo.AddAsync(u, cancellationToken);
-              
-                var userRole = new UserRoles
-                {
-                    RoleId = 1,
-                    UserId = u.Id
-                };
 
-                _repoUR.Add(userRole);
+                if (await CheckRoleExistence(1))
+                {
+                    var userRole = new UserRoles
+                    {
+                        RoleId = 1,
+                        UserId = u.Id
+                    };
+                    _repoUR.Add(userRole);
+                }
+
+                else
+                    return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleNotFound, null);///
 
                 #region send email
                 var email = u.Email;
@@ -149,7 +151,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> Login(TokenRequest tokenRequest, CancellationToken cancellationToken)
         {
 
@@ -169,9 +170,9 @@ namespace Services.Interfaces.Services
                 if (result is null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
 
-                if(!result.IsActive)
+                if (!result.IsActive)
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.UserIsNotActive, null);///
-                 
+
                 result.LastLoginDate = DateTimeOffset.Now;
                 _repo.Update(result);
 
@@ -190,7 +191,6 @@ namespace Services.Interfaces.Services
 
             }
         }
-
         public async Task<ServiceResult> ForgotPassword(ForgotPasswordViewModel model, CancellationToken cancellationToken)
         {
             try
@@ -231,7 +231,6 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
-
         public async Task<ServiceResult> RecoveryKey(RecoveryCodeViewModel model, CancellationToken cancellationToken)
         {
             try
@@ -358,6 +357,26 @@ namespace Services.Interfaces.Services
             }
         }
 
+        public async Task<bool> CheckRoleExistence(int roleId)
+        {
+            try
+            {
+                var exist = _repoR.TableNoTracking.Any(r => r.Id == roleId && !r.IsDelete);
+
+                if (exist)
+                    return true;
+
+                else
+                    return false;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                throw new Exception(Resource.GeneralErrorTryAgain);
+            }
+        }
 
     }
 }

@@ -3,8 +3,8 @@ using Common.Utilities;
 using Data;
 using Data.Repositories;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Entities.Models.Roles;
 using Entities.Models.User;
-using Entities.Models.User.Roles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,7 @@ using NLog;
 using NLog.Web;
 using Services.Interfaces;
 using Services.Interfaces.Services;
- 
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;

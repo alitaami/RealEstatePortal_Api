@@ -6,19 +6,12 @@ using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.Enums;
 using Entities.Common.ViewModels;
+using Entities.Models.Advertises;
+using Entities.Models.Roles;
 using Entities.Models.User;
-using Entities.Models.User.Advertises;
-using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static Entities.Common.Dtos.UserAdvertiseDto;
 
 namespace Services.Interfaces.Services
@@ -69,7 +62,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
-                        HomeAddress = ua.HomeAddress,
+                        Address = ua.Address,
                         RoomCount = ua.RoomCount,
                         Meterage = ua.Meterage,
                         ForSale = ua.ForSale,
@@ -96,7 +89,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
-                        HomeAddress = ua.HomeAddress,
+                        Address = ua.Address,
                         RoomCount = ua.RoomCount,
                         Meterage = ua.Meterage,
                         ForSale = ua.ForSale,
@@ -140,7 +133,7 @@ namespace Services.Interfaces.Services
                 }
                 if (!string.IsNullOrEmpty(homeAddress))
                 {
-                    result = result.Where(r => r.HomeAddress.Contains(homeAddress));
+                    result = result.Where(r => r.Address.Contains(homeAddress));
 
                 }
                 switch (orderBy)
@@ -278,7 +271,7 @@ namespace Services.Interfaces.Services
 
             }
         }
-        public async Task<ServiceResult> RequestForAdvertiseVisit(int dayOfWeek, int advertiseId, int userId, string fullName)
+        public async Task<ServiceResult> RequestForAdvertiseVisit(DateTimeOffset dayOfWeek, int advertiseId, int userId, string fullName)
         {
             try
             {
@@ -286,7 +279,7 @@ namespace Services.Interfaces.Services
 
                 #region conditions
                 var result = _repoAv.TableNoTracking
-                    .Any(u => u.AdvertiseId == advertiseId && u.DayOfWeek == (DaysOfWeek)dayOfWeek);
+                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay==dayOfWeek);
 
                 if (!result)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
@@ -307,7 +300,7 @@ namespace Services.Interfaces.Services
                 var req = new AdvertiseVisitRequests
                 {
                     AdvertiseId = advertiseId,
-                    DayOfWeek = (DaysOfWeek)dayOfWeek,
+                    AvailableVisitDay = dayOfWeek,
                     FullNameOfUser = fullName,
                     UserIdOfUser = userId,
                     IsConfirm = false,
@@ -328,7 +321,7 @@ namespace Services.Interfaces.Services
                 var res = new AdvertiseVisitRequestsDto
                 {
                     AdvertiseId= req.AdvertiseId,
-                    DayOfWeek = req.DayOfWeek,
+                    AvailableVisitDay = req.AvailableVisitDay,
                     FullNameOfUser= req.FullNameOfUser,
                     IsConfirm = req.IsConfirm
 

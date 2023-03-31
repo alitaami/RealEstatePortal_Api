@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Advertises
+namespace Entities.Models.Advertises
 {
     public class AdvertiseImages : BaseEntity
     {

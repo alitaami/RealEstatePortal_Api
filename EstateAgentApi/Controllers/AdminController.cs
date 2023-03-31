@@ -16,8 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Common.Utilities;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Entities.Models.User.Roles;
-using Entities.Models.User.Advertises;
+using Entities.Models.Advertises;
+using Entities.Models.Roles;
 
 namespace EstateAgentApi.Controllers
 {

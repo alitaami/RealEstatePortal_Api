@@ -20,5 +20,8 @@ namespace Services.Interfaces
         public Task<ServiceResult> ActivateUser(Guid guid, CancellationToken cancellationToken);
         public Task<ServiceResult> SendActivationAfterLongtime(string username, CancellationToken cancellationToken);
 
+        public Task<bool> CheckRoleExistence(int roleId);
+
+
     }
 }

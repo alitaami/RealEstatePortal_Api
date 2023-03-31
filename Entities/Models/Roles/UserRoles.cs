@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Roles
+namespace Entities.Models.Roles
 {
     public class UserRoles : BaseEntity
     {
@@ -22,7 +22,7 @@ namespace Entities.Models.User.Roles
         #region relations
 
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        public virtual User.User User { get; set; }
 
         [ForeignKey(nameof(RoleId))]
         public virtual Role Role { get; set; }

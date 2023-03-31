@@ -17,7 +17,7 @@ namespace Entities.Common.Dtos
         public string FullNameOfUser { get; set; }
 
         [Required]
-        public DaysOfWeek DayOfWeek { get; set; }
+        public DateTimeOffset AvailableVisitDay { get; set; }
         public bool IsConfirm { get; set; }
          
     }

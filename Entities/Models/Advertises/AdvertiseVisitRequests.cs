@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Advertises
+namespace Entities.Models.Advertises
 {
     public class AdvertiseVisitRequests : BaseEntity
     {
@@ -22,7 +22,7 @@ namespace Entities.Models.User.Advertises
         public string FullNameOfUser { get; set; }
 
         [Required]
-        public DaysOfWeek DayOfWeek { get; set; }
+        public DateTimeOffset AvailableVisitDay { get; set; }
         public bool IsConfirm { get; set; }
         public bool IsDelete { get; set; }
 

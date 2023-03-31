@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Advertises
+namespace Entities.Models.Advertises
 {
     public class AdvertiseAvailableVisitDays : BaseEntity
     {
         [Required]
         public int AdvertiseId { get; set; }
         [Required]
-        public DaysOfWeek DayOfWeek { get; set; }
- 
+        public DateTimeOffset AvailableVisitDay { get; set; }
+
         #region relations
         [ForeignKey(nameof(AdvertiseId))]
         public UserAdvertises UserAdvertises { get; set; }

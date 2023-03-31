@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Advertises
+namespace Entities.Models.Advertises
 {
     public class UserAdvertises : BaseEntity
     {
@@ -26,7 +26,7 @@ namespace Entities.Models.User.Advertises
         public string AdvertiserNumber { get; set; }
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
 
@@ -57,9 +57,9 @@ namespace Entities.Models.User.Advertises
         #region relations
 
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        public virtual User.User User { get; set; }
         public List<AdvertiseAvailableVisitDays> AdvertiseAvailableVisitDays { get; set; }
-        public   List<AdvertiseImages> AdvertiseImages { get; set; }
+        public List<AdvertiseImages> AdvertiseImages { get; set; }
 
         #endregion
 

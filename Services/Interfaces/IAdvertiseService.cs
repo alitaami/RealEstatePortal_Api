@@ -15,7 +15,7 @@ namespace Services.Interfaces
         public Task<ServiceResult> GetAdveriseForShow(int advertiseId);
         public Task<ServiceResult> GetAdvertiseImages(int advertiseId);
         public Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId);
-        public Task<ServiceResult> RequestForAdvertiseVisit(int dayOfWeek, int advertiseId, int userId, string fullName);
+        public Task<ServiceResult> RequestForAdvertiseVisit(DateTimeOffset dayOfWeek, int advertiseId, int userId, string fullName);
 
         #region most used methods
         public Task<string> GetUserFullname(int userId);

@@ -2,20 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 using System.Net;
-
 using WebApiCourse.WebFramework.Base;
 using Entities.Base;
 using Microsoft.AspNetCore.Authorization;
 using Common.Utilities;
 using Swashbuckle.AspNetCore.Annotations;
 using Entities.Models.User;
-using EstateAgentApi.Controllers;
 using Services.Interfaces;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
-using Entities.Models.User.Advertises;
+using Entities.Models.Advertises;
 
 namespace WebApiCourse.Controllers.v1
 {
@@ -291,7 +289,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
 
-        public async Task<IActionResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId)
+        public async Task<IActionResult> CreateAdvertiseAvailableVisitDays(List<DateTimeOffset> SelectedDays, int advertiseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -312,7 +310,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(Ok), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId)
+        public async Task<IActionResult> UpdateAdvertiseAvailableVisitDays(List<DateTimeOffset> SelectedDays, int advertiseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

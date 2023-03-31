@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User.Roles
+namespace Entities.Models.Roles
 {
     public class Role : BaseEntity
     {

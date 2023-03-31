@@ -1,13 +1,6 @@
-﻿using Common.Resources;
-using Entities.Base;
+﻿using Entities.Base;
 using Entities.Common.ViewModels;
-using Entities.Models.User.Advertises;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {

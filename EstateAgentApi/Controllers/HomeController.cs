@@ -10,11 +10,12 @@ using WebApiCourse.WebFramework.Base;
 using Entities.Models.User;
 using Entities.Common.ViewModels;
 using Entities.Common.Dtos;
-using Entities.Models.User.Advertises;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using Common.Utilities;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Entities.Models.Advertises;
+using System;
 
 namespace EstateAgentApi.Controllers
 {
@@ -125,7 +126,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [Authorize]
-        public async Task<IActionResult> RequestForAdvertiseVisit(int dayOfWeek, int advertiseId )
+        public async Task<IActionResult> RequestForAdvertiseVisit(DateTimeOffset dayOfWeek, int advertiseId )
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var fullname = User.FindFirstValue(ClaimTypes.Name);

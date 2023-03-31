@@ -5,9 +5,9 @@ using Data.Repositories;
 using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
+using Entities.Models.Advertises;
+using Entities.Models.Roles;
 using Entities.Models.User;
-using Entities.Models.User.Advertises;
-using Entities.Models.User.Roles;
 using EstateAgentApi.Services.Base;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +63,7 @@ namespace Services.Interfaces.Services
                 }
                 if (!string.IsNullOrEmpty(homeAddress))
                 {
-                    result = result.Where(r => r.HomeAddress.Contains(homeAddress));
+                    result = result.Where(r => r.Address.Contains(homeAddress));
 
                 }
                 switch (orderBy)
@@ -129,7 +129,7 @@ namespace Services.Interfaces.Services
                     RentPrice = c.RentPrice,
                     TotalPrice = c.TotalPrice,
                     BuildingType = c.BuildingType,
-                    HomeAddress = c.HomeAddress,
+                    Address = c.Address,
                     HasBalcony = c.HasBalcony,
                     HasElevator = c.HasElevator,
                     HasGarage = c.HasGarage,
@@ -153,7 +153,7 @@ namespace Services.Interfaces.Services
                     RentPrice = c.RentPrice,
                     TotalPrice = c.TotalPrice,
                     BuildingType = c.BuildingType,
-                    HomeAddress = c.HomeAddress,
+                    Address = c.Address,
                     HasBalcony = c.HasBalcony,
                     HasElevator = c.HasElevator,
                     HasGarage = c.HasGarage,
@@ -222,7 +222,7 @@ namespace Services.Interfaces.Services
                     uAd.AdvertiserName = ua.AdvertiserName;
                     uAd.AdvertiserNumber = ua.AdvertiserNumber;
                     uAd.AdvertiseText = ua.AdvertiseText;
-                    uAd.HomeAddress = ua.HomeAddress;
+                    uAd.Address = ua.Address;
                     uAd.Meterage = ua.Meterage;
                     uAd.PricePerMeter = ua.PricePerMeter;
                     uAd.TotalPrice = ua.Meterage * ua.PricePerMeter;
@@ -245,7 +245,7 @@ namespace Services.Interfaces.Services
                     uAd.AdvertiserName = ua.AdvertiserName;
                     uAd.AdvertiserNumber = ua.AdvertiserNumber;
                     uAd.AdvertiseText = ua.AdvertiseText;
-                    uAd.HomeAddress = ua.HomeAddress;
+                    uAd.Address = ua.Address;
                     uAd.Meterage = ua.Meterage;
                     uAd.ForSale = false;
                     uAd.PricePerMeter = null;
@@ -274,7 +274,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = uAd.AdvertiserName,
                         AdvertiserNumber = uAd.AdvertiserNumber,
                         AdvertiseText = uAd.AdvertiseText,
-                        HomeAddress = uAd.HomeAddress,
+                        Address = uAd.Address,
                         Meterage = uAd.Meterage,
                         PricePerMeter = uAd.PricePerMeter,
                         TotalPrice = uAd.TotalPrice,
@@ -300,7 +300,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = uAd.AdvertiserName,
                         AdvertiserNumber = uAd.AdvertiserNumber,
                         AdvertiseText = uAd.AdvertiseText,
-                        HomeAddress = uAd.HomeAddress,
+                        Address = uAd.Address,
                         Meterage = uAd.Meterage,
                         DespositPrice = uAd.DespositPrice,
                         RentPrice = uAd.RentPrice,
@@ -426,7 +426,7 @@ namespace Services.Interfaces.Services
                     u.AdvertiseText = ua.AdvertiseText;
                     u.AdvertiserName = ua.AdvertiserName;
                     u.AdvertiserNumber = ua.AdvertiserNumber;
-                    u.HomeAddress = ua.HomeAddress;
+                    u.Address = ua.Address;
                     u.Meterage = ua.Meterage;
                     u.ForSale = true;
                     u.PricePerMeter = ua.PricePerMeter;
@@ -450,7 +450,7 @@ namespace Services.Interfaces.Services
                     u.AdvertiseText = ua.AdvertiseText;
                     u.AdvertiserName = ua.AdvertiserName;
                     u.AdvertiserNumber = ua.AdvertiserNumber;
-                    u.HomeAddress = ua.HomeAddress;
+                    u.Address = ua.Address;
                     u.Meterage = ua.Meterage;
                     u.ForSale = false;
                     u.PricePerMeter = null;
@@ -505,7 +505,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
-                        HomeAddress = ua.HomeAddress,
+                        Address = ua.Address,
                         Meterage = ua.Meterage,
                         PricePerMeter = ua.PricePerMeter,
                         TotalPrice = ua.Meterage * ua.PricePerMeter,
@@ -530,7 +530,7 @@ namespace Services.Interfaces.Services
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
-                        HomeAddress = ua.HomeAddress,
+                        Address = ua.Address,
                         Meterage = ua.Meterage,
                         DespositPrice = ua.DespositPrice,
                         RentPrice = ua.RentPrice,

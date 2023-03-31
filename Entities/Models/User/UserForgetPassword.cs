@@ -1,5 +1,5 @@
 ﻿using Entities.Common;
-using Entities.Models.User.Roles;
+using Entities.Models.Roles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

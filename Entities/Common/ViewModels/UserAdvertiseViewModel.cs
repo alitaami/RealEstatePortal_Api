@@ -24,7 +24,7 @@ namespace Entities.Common.ViewModels
 
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
 
@@ -63,7 +63,7 @@ namespace Entities.Common.ViewModels
 
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
 
@@ -109,7 +109,7 @@ namespace Entities.Common.ViewModels
 
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
 
@@ -151,7 +151,7 @@ namespace Entities.Common.ViewModels
 
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
 

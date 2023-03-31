@@ -15,7 +15,7 @@ namespace Entities.Common.Dtos
             public string AdvertiseText { get; set; }
             public string AdvertiserName { get; set; }
             public string AdvertiserNumber { get; set; }
-            public string HomeAddress { get; set; }
+            public string Address { get; set; }
             public int RoomCount { get; set; }
             public bool ForSale { get; set; }
             public long Meterage { get; set; }
@@ -37,7 +37,7 @@ namespace Entities.Common.Dtos
             public string AdvertiseText { get; set; }
             public string AdvertiserName { get; set; }
             public string AdvertiserNumber { get; set; }
-            public string HomeAddress { get; set; }
+            public string Address { get; set; }
             public int RoomCount { get; set; }
             public long Meterage { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entities.Common.Dtos
             public string AdvertiseText { get; set; }
             public string AdvertiserName { get; set; }
             public string AdvertiserNumber { get; set; }
-            public string HomeAddress { get; set; }
+            public string Address { get; set; }
             public int RoomCount { get; set; }
             public bool ForSale { get; set; }
             public long Meterage { get; set; }
@@ -79,7 +79,7 @@ namespace Entities.Common.Dtos
             public string AdvertiseText { get; set; }
             public string AdvertiserName { get; set; }
             public string AdvertiserNumber { get; set; }
-            public string HomeAddress { get; set; }
+            public string Address { get; set; }
             public int RoomCount { get; set; }
             public long Meterage { get; set; }
 
@@ -101,7 +101,7 @@ namespace Entities.Common.Dtos
             public string AdvertiseText { get; set; }
             public string AdvertiserName { get; set; }
             public string AdvertiserNumber { get; set; }
-            public string HomeAddress { get; set; }
+            public string Address { get; set; }
             public int RoomCount { get; set; }
             public bool ForSale { get; set; }
             public long Meterage { get; set; }

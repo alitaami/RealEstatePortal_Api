@@ -22,8 +22,8 @@ namespace Services.Interfaces
         public Task<ServiceResult> DeleteAdvertiseImageOfUser(int fileId, int userId, CancellationToken cancellationToken);
         public Task<ServiceResult> UpdateAdvertiseImageOfUser(int fileId, int userId, [FromForm] AdvertiseImageViewModel image, CancellationToken cancellationToken);
         public Task<ServiceResult> DeleteAdvertiseOfUser(int advertiseId, int userId, CancellationToken cancellationToken);
-        public Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
-        public Task<ServiceResult> UpdateAdvertiseAvailableVisitDays(List<int> SelectedDays, int advertiseId, int userId);
+        public Task<ServiceResult> CreateAdvertiseAvailableVisitDays(List<DateTimeOffset> SelectedDays, int advertiseId, int userId);
+        public Task<ServiceResult> UpdateAdvertiseAvailableVisitDays(List<DateTimeOffset> SelectedDays, int advertiseId, int userId);
         public Task<ServiceResult> GetAdvertiseAvailableVisitDays(int advertiseId, int userId);
         public Task<ServiceResult> AdvertiserGetRequestsForVisit(int advertiseId, int userId);
         public Task<ServiceResult> AdvertiserConfirmRequestsForVisit(int reqId, int userId);
@@ -34,6 +34,7 @@ namespace Services.Interfaces
         public bool CheckUserHasThisAdvertise(int advertiseId, int userId);
         public Task<string> GetUserEmail(int userId);
         public Task<string> GetAdvertiseName(int advetiseId);
+        public bool CheckRoleExistence(int roleId);
         #endregion
 
     }
