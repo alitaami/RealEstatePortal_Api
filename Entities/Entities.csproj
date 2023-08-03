@@ -36,6 +36,7 @@
   <ItemGroup>
     <Folder Include="Common\Enums\" />
     <Folder Include="Common\Dtos\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
