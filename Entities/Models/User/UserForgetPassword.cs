@@ -1,4 +1,5 @@
 ﻿using Entities.Common;
+using Entities.Models.Roles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,23 +10,22 @@ using System.Threading.Tasks;
 
 namespace Entities.Models.User
 {
-    public class UserRoles:BaseEntity
+    public class UserForgetPassword : BaseEntity
     {
-        public UserRoles()
-        {
-
-        }
-       
+        [Required]
         public int UserId { get; set; }
-        public int RoleId { get; set; }
+        [Required]
+        public string RecoveryKey { get; set; }
+        [Required]
+        public DateTimeOffset CreatedDate { get; set; }
+        [Required]
+        public DateTimeOffset ExpireDate { get; set; }
 
         #region relations
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-        
-        [ForeignKey(nameof(RoleId))]
-        public virtual Role Role { get; set; }
+ 
         #endregion
     }
 }

@@ -61,6 +61,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جهت فعالسازی حساب کاربری خود رو لینک زیر کلیک کنید.
+        /// </summary>
+        public static string ActivateAccount {
+            get {
+                return ResourceManager.GetString("ActivateAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فعالسازی حساب کاربری.
+        /// </summary>
+        public static string ActivateAccountSubject {
+            get {
+                return ResourceManager.GetString("ActivateAccountSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to آگهی ای با این نام موجود است.
         /// </summary>
         public static string AdExists {
@@ -79,6 +97,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to برای بازدید از این ملک چنین روزی تعیین نشده است .
+        /// </summary>
+        public static string AdvertiseDayNotMatch {
+            get {
+                return ResourceManager.GetString("AdvertiseDayNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to سن نباید کمتر از 18 باشد.
         /// </summary>
         public static string AgeError {
@@ -88,7 +115,7 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تلفن همراه و یا نام کاربری تکراریست!.
+        ///   Looks up a localized string similar to تلفن همراه ،ایمیل و یا نام کاربری تکراریست!.
         /// </summary>
         public static string AlreadyExists {
             get {
@@ -97,11 +124,65 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری و یا کد املاک تکراریست!.
+        ///   Looks up a localized string similar to تلفن همراه ، نام کاربری ،ایمیل و یا کد املاک تکراریست!.
         /// </summary>
         public static string AlreadyExists2 {
             get {
                 return ResourceManager.GetString("AlreadyExists2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تایید درخواست بازدید از ملک.
+        /// </summary>
+        public static string ConfirmVisit {
+            get {
+                return ResourceManager.GetString("ConfirmVisit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to این روز برای آگهی شما ثبت شده است.
+        /// </summary>
+        public static string DaysExists {
+            get {
+                return ResourceManager.GetString("DaysExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید شما از ملک آگهی شده.
+        /// </summary>
+        public static string EmailSubject1 {
+            get {
+                return ResourceManager.GetString("EmailSubject1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مورد تایید قرار گرفت.
+        /// </summary>
+        public static string EmailSubject1_1 {
+            get {
+                return ResourceManager.GetString("EmailSubject1-1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید از ملک آگهی شده شما، توسط .
+        /// </summary>
+        public static string EmailSubject2 {
+            get {
+                return ResourceManager.GetString("EmailSubject2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to برای شما ارسال شده است.
+        /// </summary>
+        public static string EmailSubject2_1 {
+            get {
+                return ResourceManager.GetString("EmailSubject2-1", resourceCulture);
             }
         }
         
@@ -124,6 +205,24 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مدت زمان در نظر گرفته شده منقضی شده است.
+        /// </summary>
+        public static string ExpiredDate {
+            get {
+                return ResourceManager.GetString("ExpiredDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جهت بازیابی رمزعبور کد ذیل را در فیلد مربوطه وارد کنید.دقت شود که این کد تا 5 دقیقه معتبر است.
+        /// </summary>
+        public static string ForgotPassword1 {
+            get {
+                return ResourceManager.GetString("ForgotPassword1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لطفا مجددا تلاش کنید.
         /// </summary>
         public static string GeneralErrorTryAgain {
@@ -133,11 +232,29 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to عکس وارد شود.
+        /// </summary>
+        public static string ImageRequired {
+            get {
+                return ResourceManager.GetString("ImageRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The response has already started, the http status code middleware will not be executed..
         /// </summary>
         public static string InvalidOperationException {
             get {
                 return ResourceManager.GetString("InvalidOperationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حساب کاربری شما فعال شده است.
+        /// </summary>
+        public static string IsActive {
+            get {
+                return ResourceManager.GetString("IsActive", resourceCulture);
             }
         }
         
@@ -196,6 +313,51 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to بازیابی رمز عبور.
+        /// </summary>
+        public static string RecoveryPassword {
+            get {
+                return ResourceManager.GetString("RecoveryPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to شما قبلا درخواستی برای بازدید از این ملک ارسال کرده اید.
+        /// </summary>
+        public static string RequestExists {
+            get {
+                return ResourceManager.GetString("RequestExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to درخواست بازدید از ملک.
+        /// </summary>
+        public static string RequestVisit {
+            get {
+                return ResourceManager.GetString("RequestVisit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to چنین دسترسی ای برای شما تعریف نشده است.
+        /// </summary>
+        public static string RoleDoesNotMatchUser {
+            get {
+                return ResourceManager.GetString("RoleDoesNotMatchUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نقش وارد شده تکراری میباشد.
+        /// </summary>
+        public static string RoleExist {
+            get {
+                return ResourceManager.GetString("RoleExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نقشی یافت نشد.
         /// </summary>
         public static string RoleNotFound {
@@ -241,11 +403,29 @@ namespace Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حساب کاربری فعال نیست.
+        ///   Looks up a localized string similar to حساب کاربری شما فعال نیست.
         /// </summary>
         public static string UserIsNotActive {
             get {
                 return ResourceManager.GetString("UserIsNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ایجاد کننده آگهی نمیتواند برای آگهی خود درخواست بازدید بفرستد.
+        /// </summary>
+        public static string UserRequestError {
+            get {
+                return ResourceManager.GetString("UserRequestError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to این نقش قبلا به این کاربر نسبت داده شده است.
+        /// </summary>
+        public static string UserRoleExist {
+            get {
+                return ResourceManager.GetString("UserRoleExist", resourceCulture);
             }
         }
         
@@ -255,6 +435,15 @@ namespace Common.Resources {
         public static string WrongAdvertise {
             get {
                 return ResourceManager.GetString("WrongAdvertise", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to روز های هفته باید شامل شنبه تا جمعه باشند.
+        /// </summary>
+        public static string WrongDaySelected {
+            get {
+                return ResourceManager.GetString("WrongDaySelected", resourceCulture);
             }
         }
     }

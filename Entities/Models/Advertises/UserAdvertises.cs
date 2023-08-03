@@ -1,4 +1,5 @@
 ﻿using Entities.Common;
+using Entities.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User
+namespace Entities.Models.Advertises
 {
     public class UserAdvertises : BaseEntity
     {
@@ -25,30 +26,40 @@ namespace Entities.Models.User
         public string AdvertiserNumber { get; set; }
         [Required]
         [StringLength(200)]
-        public string HomeAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public int RoomCount { get; set; }
-        [Required]
+
+        public bool ForSale { get; set; }
+
         public long Meterage { get; set; }
 
+        public long? PricePerMeter { get; set; }
+
+        public long? TotalPrice { get; set; }
+
+        public long? DespositPrice { get; set; }
+        public long? RentPrice { get; set; }
+
         [Required]
-        public long PricePerMeter { get; set; }
-        [Required]
-        public long TotalPrice { get; set; }
+        public BuildingTypeEnum BuildingType { get; set; }
+
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
+        public bool HasGarage { get; set; }
         public bool HasElevator { get; set; }
         public bool HasBalcony { get; set; }
         public bool HasWarehouse { get; set; }
         public bool IsDelete { get; set; }
-
         public DateTimeOffset CreatedDate { get; set; }
+        public bool IsConfirm { get; set; }
 
         #region relations
 
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
-
+        public virtual User.User User { get; set; }
+        public List<AdvertiseAvailableVisitDays> AdvertiseAvailableVisitDays { get; set; }
+        public List<AdvertiseImages> AdvertiseImages { get; set; }
 
         #endregion
 

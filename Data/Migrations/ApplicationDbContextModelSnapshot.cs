@@ -22,7 +22,178 @@ namespace Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Entities.Models.User.Role", b =>
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseAvailableVisitDays", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdvertiseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("AvailableVisitDay")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvertiseId");
+
+                    b.ToTable("AdvertiseAvailableVisitDays");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdvertiseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvertiseId");
+
+                    b.ToTable("AdvertiseImages");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseVisitRequests", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdvertiseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("AvailableVisitDay")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FullNameOfUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsConfirm")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UserIdOfUser")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvertiseId");
+
+                    b.ToTable("AdvertiseVisitRequests");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.UserAdvertises", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("AdvertiseText")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AdvertiserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("AdvertiserNumber")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<int>("BuildingType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("DespositPrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("ForSale")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasBalcony")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasElevator")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasGarage")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasWarehouse")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsConfirm")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("Meterage")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PricePerMeter")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RentPrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RoomCount")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("TotalPrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAdvertises");
+                });
+
+            modelBuilder.Entity("Entities.Models.Roles.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,6 +206,9 @@ namespace Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -45,6 +219,29 @@ namespace Data.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("Entities.Models.Roles.UserRoles", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
+                });
+
             modelBuilder.Entity("Entities.Models.User.User", b =>
                 {
                     b.Property<int>("Id")
@@ -52,6 +249,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ActivationGuid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -107,6 +307,9 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
@@ -116,65 +319,23 @@ namespace Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserAdvertises", b =>
+            modelBuilder.Entity("Entities.Models.User.UserForgetPassword", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdvertiseText")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AdvertiserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("AdvertiserNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Description")
+                    b.Property<DateTimeOffset>("ExpireDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("RecoveryKey")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("HasBalcony")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasElevator")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasWarehouse")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("HomeAddress")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("Meterage")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PricePerMeter")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("RoomCount")
-                        .HasColumnType("int");
-
-                    b.Property<long>("TotalPrice")
-                        .HasColumnType("bigint");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -183,33 +344,43 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAdvertises");
+                    b.ToTable("UserForgetPasswords");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserRoles", b =>
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseAvailableVisitDays", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("Entities.Models.Advertises.UserAdvertises", "UserAdvertises")
+                        .WithMany("AdvertiseAvailableVisitDays")
+                        .HasForeignKey("AdvertiseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRoles");
+                    b.Navigation("UserAdvertises");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserAdvertises", b =>
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseImages", b =>
+                {
+                    b.HasOne("Entities.Models.Advertises.UserAdvertises", "UserAdvertises")
+                        .WithMany("AdvertiseImages")
+                        .HasForeignKey("AdvertiseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserAdvertises");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.AdvertiseVisitRequests", b =>
+                {
+                    b.HasOne("Entities.Models.Advertises.UserAdvertises", "UserAdvertises")
+                        .WithMany()
+                        .HasForeignKey("AdvertiseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserAdvertises");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.UserAdvertises", b =>
                 {
                     b.HasOne("Entities.Models.User.User", "User")
                         .WithMany("UserAdvertises")
@@ -220,9 +391,9 @@ namespace Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.UserRoles", b =>
+            modelBuilder.Entity("Entities.Models.Roles.UserRoles", b =>
                 {
-                    b.HasOne("Entities.Models.User.Role", "Role")
+                    b.HasOne("Entities.Models.Roles.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -239,7 +410,25 @@ namespace Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Entities.Models.User.Role", b =>
+            modelBuilder.Entity("Entities.Models.User.UserForgetPassword", b =>
+                {
+                    b.HasOne("Entities.Models.User.User", "User")
+                        .WithMany("UserForgetPassword")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Entities.Models.Advertises.UserAdvertises", b =>
+                {
+                    b.Navigation("AdvertiseAvailableVisitDays");
+
+                    b.Navigation("AdvertiseImages");
+                });
+
+            modelBuilder.Entity("Entities.Models.Roles.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
@@ -247,6 +436,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Entities.Models.User.User", b =>
                 {
                     b.Navigation("UserAdvertises");
+
+                    b.Navigation("UserForgetPassword");
 
                     b.Navigation("UserRoles");
                 });

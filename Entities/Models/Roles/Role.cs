@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models.User
+namespace Entities.Models.Roles
 {
     public class Role : BaseEntity
     {
@@ -18,6 +18,7 @@ namespace Entities.Models.User
         [StringLength(100)]
         public string Description { get; set; }
 
+        public bool IsDelete { get; set; }
         #region Relations
         public virtual List<UserRoles> UserRoles { get; set; }
 

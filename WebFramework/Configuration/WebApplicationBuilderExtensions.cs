@@ -2,6 +2,8 @@
 using Common.Utilities;
 using Data;
 using Data.Repositories;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Entities.Models.Roles;
 using Entities.Models.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +23,7 @@ using NLog;
 using NLog.Web;
 using Services.Interfaces;
 using Services.Interfaces.Services;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -110,7 +113,7 @@ namespace WebFramework.Configuration
         {
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Data Source =.; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
+                options.UseSqlServer("Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
         }
 
@@ -127,7 +130,7 @@ namespace WebFramework.Configuration
                 var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
                 //show controller XML comments like summary
                 options.IncludeXmlComments(xmlDocPath, true);
-
+                //options.OperationFilter<FormFileSwaggerFilter>();
                 //options.EnableAnnotations();
                 options.UseInlineDefinitionsForEnums();
                 //options.DescribeAllParametersInCamelCase();
@@ -146,8 +149,7 @@ namespace WebFramework.Configuration
                 //options.ExampleFilters();
 
                 ////Adds an Upload button to endpoints which have [AddSwaggerFileUploadButton]
-                //options.OperationFilter<AddFileParamTypesOperationFilter>();
-
+                options.OperationFilter<FileUploadOperation>(); // Add this line to enable file upload
                 ////Set summary of action if not already set
                 options.OperationFilter<ApplySummariesOperationFilter>();
 
@@ -284,7 +286,7 @@ namespace WebFramework.Configuration
         private static void AddMvcAndJsonOptions(WebApplicationBuilder builder)
         {
             builder.Services
-                             .AddControllers()
+                             .AddControllers()        
                              .AddJsonOptions(options =>
                              {
                                  options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -505,11 +507,14 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IJwtService, JwtService>();      
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
-
+            builder.Services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
         }
-
 
         private static void AddAppHsts(WebApplicationBuilder builder)
         {

@@ -1,4 +1,6 @@
 ﻿using Entities.Common;
+using Entities.Models.Advertises;
+using Entities.Models.Roles;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Models.User
@@ -9,7 +11,8 @@ namespace Entities.Models.User
         {
             IsActive = false;
             SecurityStamp = Guid.NewGuid();
-        }
+            ActivationGuid = Guid.NewGuid();
+         }
 
         [Required]
         [StringLength(100)]
@@ -43,13 +46,16 @@ namespace Entities.Models.User
 
         public DateTimeOffset? LastLoginDate { get; set; }
         public Guid SecurityStamp { get; set; }
-
+        public Guid ActivationGuid { get; set; }
+   
         #region Relations
         public virtual List<UserRoles> UserRoles { get; set; }
 
         public virtual List<UserAdvertises> UserAdvertises { get; set; }
+        public virtual List<UserForgetPassword> UserForgetPassword { get; set; }
+
 
         #endregion
     }
- 
+
 }

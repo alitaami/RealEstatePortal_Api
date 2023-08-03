@@ -5,14 +5,14 @@
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class addIsDelete : Migration
+    public partial class isdeleteforRoles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
                 name: "IsDelete",
-                table: "UserAdvertises",
+                table: "Roles",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -23,7 +23,7 @@ namespace Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "IsDelete",
-                table: "UserAdvertises");
+                table: "Roles");
         }
     }
 }

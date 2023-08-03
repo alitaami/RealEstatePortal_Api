@@ -6,25 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class updateVisitDay2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTimeOffset>(
-                name: "CreatedDate",
-                table: "UserAdvertises",
-                type: "datetimeoffset",
+            migrationBuilder.AddColumn<DateTime>(
+                name: "AvailableVisitDay",
+                table: "AdvertiseAvailableVisitDays",
+                type: "datetime2",
                 nullable: false,
-                defaultValue: new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)));
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "CreatedDate",
-                table: "UserAdvertises");
+                name: "AvailableVisitDay",
+                table: "AdvertiseAvailableVisitDays");
         }
     }
 }

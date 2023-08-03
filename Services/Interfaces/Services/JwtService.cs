@@ -1,12 +1,12 @@
 ﻿using Common;
 using Data.Repositories;
+using Entities.Models.Roles;
 using Entities.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Services.Interfaces.Services
@@ -76,21 +76,17 @@ namespace Services.Interfaces.Services
 
             var list = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name , user.UserName),
+            new Claim(ClaimTypes.Name , user.FullName),
             new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()),
             new Claim(ClaimTypes.MobilePhone , user.PhoneNumber.ToString()),
             new Claim(securityStampClaimType, user.SecurityStamp.ToString())
-
         };
-
             var roles = _repo.Entities.Where(u => u.UserId == user.Id);
 
             foreach (var role in roles)
             {
                 list.Add(new Claim(ClaimTypes.Role, role.RoleId.ToString()));
             }
-
-
             return list;
         }
 

@@ -1,7 +1,9 @@
 ﻿using Common.Utilities;
 using Entities.Common;
+using Entities.Models.Advertises;
 using Entities.Models.User;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace Data
 {
@@ -46,6 +48,12 @@ namespace Data
             modelBuilder.Entity<User>()
                .HasIndex(x => x.PhoneNumber)
                .IsUnique();
+           
+            modelBuilder.Entity<User>()
+               .HasIndex(x => x.Email)
+            .IsUnique();
+
+            
         }
         #endregion 
 
