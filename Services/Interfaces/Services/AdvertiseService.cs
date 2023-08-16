@@ -1,4 +1,5 @@
-﻿using Common.Resources;
+﻿using Common;
+using Common.Resources;
 using Common.Utilities;
 using Data;
 using Data.Repositories;
@@ -11,7 +12,10 @@ using Entities.Models.Roles;
 using Entities.Models.User;
 using EstateAgentApi.Services.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System.Text;
 using static Entities.Common.Dtos.UserAdvertiseDto;
 
 namespace Services.Interfaces.Services
@@ -27,8 +31,8 @@ namespace Services.Interfaces.Services
         private IRepository<AdvertiseImages> _repoIm;
         ILogger<AdvertiseService> _logger;
         private readonly IUserService _user;
-
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        private readonly IDistributedCache _cache;
+        public AdvertiseService(IDistributedCache cache, ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
@@ -39,84 +43,140 @@ namespace Services.Interfaces.Services
             _repoReq = req;
             _user = user;
             _repoIm = repoIm;
+            _cache = cache;
+            _logger = logger;
         }
 
         #region public
+
         public async Task<ServiceResult> GetAdveriseForShow(int advertiseId)
         {
             try
             {
-                var ua = await _repoAd.TableNoTracking
-                .Where(u => u.Id == advertiseId && !u.IsDelete && u.IsConfirm)
-                .FirstOrDefaultAsync();
+                var cacheKey = KeysForCache.getAdvertiseForShowKey(advertiseId);
 
-                if (ua == null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
+                // Check if data is available in the cache
+                byte[] cachedBytes = await _cache.GetAsync(cacheKey);
 
-                if (!ua.ForSale)
+                if (cachedBytes != null)
                 {
-
-                    var result = new RentAdvertiseDto
+                    using (var reader = new BinaryReader(new MemoryStream(cachedBytes), Encoding.UTF8, true))
                     {
+                        long expirationTicks = reader.ReadInt64(); // Read expiration time as ticks
+                        DateTimeOffset expirationTime = new DateTimeOffset(expirationTicks, TimeSpan.Zero);
 
-                        AdvertiserName = ua.AdvertiserName,
-                        AdvertiserNumber = ua.AdvertiserNumber,
-                        AdvertiseText = ua.AdvertiseText,
-                        Address = ua.Address,
-                        RoomCount = ua.RoomCount,
-                        Meterage = ua.Meterage,
-                        ForSale = ua.ForSale,
-                        DespositPrice = ua.DespositPrice,
-                        RentPrice = ua.RentPrice,
-                        HasBalcony = ua.HasBalcony,
-                        HasElevator = ua.HasElevator,
-                        HasWarehouse = ua.HasWarehouse,
-                        HasGarage = ua.HasGarage,
-                        BuildingType = ua.BuildingType,
-                        Description = ua.Description,
-                        CreatedDate = ua.CreatedDate,
+                        if (DateTimeOffset.UtcNow <= expirationTime)
+                        {
+                            byte[] jsonData = reader.ReadBytes(cachedBytes.Length - sizeof(long)); // Read cached data
+                            string jsonString = Encoding.UTF8.GetString(jsonData);
+                            SaleAdvertiseDto cachedResult = JsonConvert.DeserializeObject<SaleAdvertiseDto>(jsonString);
 
-                    };
+                            // Use cachedResult here
+                            return Ok(cachedResult);
+                        }
+                        else
+                        {
+                            // ... Fetch fresh data and create result ...
 
-                    return Ok(result);
+                            // Cache the result for future requests
+                            // ... Cache logic ...
+
+                            return Ok(); // Return the result
+                        }
+                    }
                 }
-
                 else
                 {
-                    var result = new SaleAdvertiseDto
+                    var ua = await _repoAd.TableNoTracking
+                        .Where(u => u.Id == advertiseId && !u.IsDelete && u.IsConfirm)
+                        .FirstOrDefaultAsync();
+
+                    if (ua == null)
+                        return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);
+
+                    if (!ua.ForSale)
                     {
+                        var result = new RentAdvertiseDto
+                        {
+                            AdvertiserName = ua.AdvertiserName,
+                            AdvertiserNumber = ua.AdvertiserNumber,
+                            AdvertiseText = ua.AdvertiseText,
+                            Address = ua.Address,
+                            RoomCount = ua.RoomCount,
+                            Meterage = ua.Meterage,
+                            ForSale = ua.ForSale,
+                            DespositPrice = ua.DespositPrice,
+                            RentPrice = ua.RentPrice,
+                            HasBalcony = ua.HasBalcony,
+                            HasElevator = ua.HasElevator,
+                            HasWarehouse = ua.HasWarehouse,
+                            HasGarage = ua.HasGarage,
+                            BuildingType = ua.BuildingType,
+                            Description = ua.Description,
+                            CreatedDate = ua.CreatedDate
+                        };
 
-                        AdvertiserName = ua.AdvertiserName,
-                        AdvertiserNumber = ua.AdvertiserNumber,
-                        AdvertiseText = ua.AdvertiseText,
-                        Address = ua.Address,
-                        RoomCount = ua.RoomCount,
-                        Meterage = ua.Meterage,
-                        ForSale = ua.ForSale,
-                        PricePerMeter = ua.PricePerMeter,
-                        TotalPrice = ua.TotalPrice,
-                        HasBalcony = ua.HasBalcony,
-                        HasElevator = ua.HasElevator,
-                        HasWarehouse = ua.HasWarehouse,
-                        HasGarage = ua.HasGarage,
-                        BuildingType = ua.BuildingType,
-                        Description = ua.Description,
-                        CreatedDate = ua.CreatedDate,
+                        // Cache the result for future requests
+                        string jsonResult = JsonConvert.SerializeObject(result); // Serialize object to JSON
+                        byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonResult); // Convert JSON string to byte array
+                        DateTimeOffset cacheExpiration = DateTimeOffset.UtcNow.AddMinutes(30); // Calculate cache expiration time
 
-                    };
+                        using (var cachedItem = new MemoryStream()) // Create a memory stream to store cached data
+                        using (var writer = new BinaryWriter(cachedItem, Encoding.UTF8, true))
+                        {
+                            writer.Write(cacheExpiration.Ticks); // Write expiration time as ticks
+                            writer.Write(jsonBytes); // Write cached data
+                            await _cache.SetAsync(cacheKey, cachedItem.ToArray()); // Cache the memory stream
+                        }
 
-                    return Ok(result);
+                        return Ok(result); // Return the result
+                    }
+                    else
+                    {
+                        var result = new SaleAdvertiseDto
+                        {
+                            AdvertiserName = ua.AdvertiserName,
+                            AdvertiserNumber = ua.AdvertiserNumber,
+                            AdvertiseText = ua.AdvertiseText,
+                            Address = ua.Address,
+                            RoomCount = ua.RoomCount,
+                            Meterage = ua.Meterage,
+                            ForSale = ua.ForSale,
+                            PricePerMeter = ua.PricePerMeter,
+                            TotalPrice = ua.TotalPrice,
+                            HasBalcony = ua.HasBalcony,
+                            HasElevator = ua.HasElevator,
+                            HasWarehouse = ua.HasWarehouse,
+                            HasGarage = ua.HasGarage,
+                            BuildingType = ua.BuildingType,
+                            Description = ua.Description,
+                            CreatedDate = ua.CreatedDate
+                        };
+
+                        // Cache the result for future requests
+                        string jsonResult = JsonConvert.SerializeObject(result); // Serialize object to JSON
+                        byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonResult); // Convert JSON string to byte array
+                        DateTimeOffset cacheExpiration = DateTimeOffset.UtcNow.AddMinutes(30); // Calculate cache expiration time
+
+                        using (var cachedItem = new MemoryStream()) // Create a memory stream to store cached data
+                        using (var writer = new BinaryWriter(cachedItem, Encoding.UTF8, true))
+                        {
+                            writer.Write(cacheExpiration.Ticks); // Write expiration time as ticks
+                            writer.Write(jsonBytes); // Write cached data
+                            await _cache.SetAsync(cacheKey, cachedItem.ToArray()); // Cache the memory stream
+                        }
+
+                        return Ok(result); // Return the result
+                    }
                 }
-
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, null, null);
-
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+
         public async Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             try
@@ -279,7 +339,7 @@ namespace Services.Interfaces.Services
 
                 #region conditions
                 var result = _repoAv.TableNoTracking
-                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay==dayOfWeek);
+                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay == dayOfWeek);
 
                 if (!result)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
@@ -320,9 +380,9 @@ namespace Services.Interfaces.Services
 
                 var res = new AdvertiseVisitRequestsDto
                 {
-                    AdvertiseId= req.AdvertiseId,
+                    AdvertiseId = req.AdvertiseId,
                     AvailableVisitDay = req.AvailableVisitDay,
-                    FullNameOfUser= req.FullNameOfUser,
+                    FullNameOfUser = req.FullNameOfUser,
                     IsConfirm = req.IsConfirm
 
                 };

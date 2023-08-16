@@ -23,7 +23,7 @@ using NLog;
 using NLog.Web;
 using Services.Interfaces;
 using Services.Interfaces.Services;
-
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -117,7 +117,15 @@ namespace WebFramework.Configuration
             });
         }
 
+        private static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
+        {
+            // Read Redis connection string from configuration
+            string redisConnectionString = configuration.GetConnectionString("Redis:ConnectionString");
 
+            // Configure Redis
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+        }
+         
         private static void AddSwagger(WebApplicationBuilder builder)
         {
             Assert.NotNull(builder.Services, nameof(builder.Services));
@@ -150,7 +158,7 @@ namespace WebFramework.Configuration
 
                 ////Adds an Upload button to endpoints which have [AddSwaggerFileUploadButton]
                 options.OperationFilter<FileUploadOperation>(); // Add this line to enable file upload
-                ////Set summary of action if not already set
+                                                                ////Set summary of action if not already set
                 options.OperationFilter<ApplySummariesOperationFilter>();
 
                 //#region Add UnAuthorized to Response
@@ -256,7 +264,7 @@ namespace WebFramework.Configuration
 
                 //    return versions.Any(v => $"v{v.ToString()}" == docName);
                 //});
-#endregion
+                #endregion
 
                 //If use FluentValidation then must be use this package to show validation in swagger (MicroElements.Swashbuckle.FluentValidation)
                 //options.AddFluentValidationRules();
@@ -286,7 +294,7 @@ namespace WebFramework.Configuration
         private static void AddMvcAndJsonOptions(WebApplicationBuilder builder)
         {
             builder.Services
-                             .AddControllers()        
+                             .AddControllers()
                              .AddJsonOptions(options =>
                              {
                                  options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -372,8 +380,8 @@ namespace WebFramework.Configuration
 
         public static void AddJwtAuthentication(this IServiceCollection services, JwtSettings jwtSettings)
         {
-     
-          
+
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -506,7 +514,7 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<IJwtService, JwtService>();      
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
