@@ -78,6 +78,8 @@ namespace WebFramework.Configuration
 
                 AddAppDbContext(builder, configuration);
 
+                AddRedis(builder, configuration);
+
                 AddMvcAndJsonOptions(builder);
 
                 AddMinimalMvc(builder);
@@ -117,15 +119,24 @@ namespace WebFramework.Configuration
             });
         }
 
-        private static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
+        private static void AddRedis(WebApplicationBuilder builder, IConfiguration configuration)
         {
             // Read Redis connection string from configuration
-            string redisConnectionString = configuration.GetConnectionString("Redis:ConnectionString");
+            // Retrieve Redis connection strings from appsettings
+            IConfigurationSection redisConfiguration = configuration.GetSection("Redis");
+            string? primaryConnectionString = "redis-18454.c1.us-central1-2.gce.cloud.redislabs.com:18454,password=ghBbFNfOWuTXPo9RalT1XBPhjJCydUXj,abortConnect=false";
 
-            // Configure Redis
-            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+            // Configure Redis with abortConnect=false
+            ConfigurationOptions redisPrimaryConfig = ConfigurationOptions.Parse(primaryConnectionString);
+
+            redisPrimaryConfig.AbortOnConnectFail = false;
+
+            // Register IConnectionMultiplexer as a singleton
+            builder.Services.AddSingleton<IConnectionMultiplexer>(
+                ConnectionMultiplexer.Connect(redisPrimaryConfig));
+
         }
-         
+
         private static void AddSwagger(WebApplicationBuilder builder)
         {
             Assert.NotNull(builder.Services, nameof(builder.Services));
@@ -517,6 +528,7 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddTransient<IMemoryService, MemoryService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
             builder.Services.Configure<IISServerOptions>(options =>
             {

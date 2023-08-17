@@ -5,7 +5,8 @@ namespace Common
     {
         public static string getAdvertiseForShowKey(this int key)
         {
-            return $"Advertise-{key}";
+            return $"AdvertiseCacheKey_-{key}";
         }
+        
     }
 }
