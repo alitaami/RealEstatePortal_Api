@@ -53,6 +53,7 @@ namespace Services.Interfaces.Services
         {
             try
             {
+          
                 var cachedResult = await _memory
                     .GetAsync<SaleAdvertiseDto>(KeysForCache
                     .getAdvertiseForShowKey(advertiseId));
@@ -115,7 +116,9 @@ namespace Services.Interfaces.Services
                         CreatedDate = ua.CreatedDate
                     };
 
-                    await _memory.SetAsync(KeysForCache.getAdvertiseForShowKey(advertiseId), result, TimeSpan.FromMinutes(30));
+                    await _memory
+                        .SetAsync(KeysForCache
+                        .getAdvertiseForShowKey(advertiseId), result, TimeSpan.FromMinutes(30));
 
                     return Ok(result); // Return the result
                 }

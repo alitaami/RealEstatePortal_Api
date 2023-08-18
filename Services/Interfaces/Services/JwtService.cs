@@ -63,7 +63,6 @@ namespace Services.Interfaces.Services
 
             return new AccessToken(securityToken);
 
-
         }
 
         private IEnumerable<Claim> getClaims(User user)

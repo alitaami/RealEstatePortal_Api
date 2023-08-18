@@ -21,7 +21,6 @@ namespace WebFramework.Configuration
             {
                 app.UseNAPCustomHeadersMidleware();
                 app.UseNAPExceptionHandlerMiddleware();
-
                 app.UseHttpsRedirection();
                 app.UseHsts();
                 app.UseCors();

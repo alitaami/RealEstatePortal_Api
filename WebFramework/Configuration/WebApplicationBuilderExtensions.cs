@@ -52,12 +52,9 @@ namespace WebFramework.Configuration
                 if (builder is null)
                     throw new ArgumentNullException(nameof(builder));
 
-
-
                 ConfigLogging(builder);
 
                 var configuration = builder.Configuration;
-
 
                 #region   AddJwtAuthentication  
 
@@ -117,24 +114,15 @@ namespace WebFramework.Configuration
             {
                 options.UseSqlServer("Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
-        }
-
+        } 
         private static void AddRedis(WebApplicationBuilder builder, IConfiguration configuration)
         {
-            // Read Redis connection string from configuration
-            // Retrieve Redis connection strings from appsettings
-            IConfigurationSection redisConfiguration = configuration.GetSection("Redis");
-            string? primaryConnectionString = "redis-18454.c1.us-central1-2.gce.cloud.redislabs.com:18454,password=ghBbFNfOWuTXPo9RalT1XBPhjJCydUXj,abortConnect=false";
+            string redisConnectionString = "redis-18454.c1.us-central1-2.gce.cloud.redislabs.com:18454,password=ghBbFNfOWuTXPo9RalT1XBPhjJCydUXj,ssl=True,abortConnect=False,defaultDatabase=0";
+            ConfigurationOptions redisConfig = ConfigurationOptions.Parse(redisConnectionString);
+            IConnectionMultiplexer connection = ConnectionMultiplexer.Connect(redisConfig);
 
-            // Configure Redis with abortConnect=false
-            ConfigurationOptions redisPrimaryConfig = ConfigurationOptions.Parse(primaryConnectionString);
-
-            redisPrimaryConfig.AbortOnConnectFail = false;
-
-            // Register IConnectionMultiplexer as a singleton
-            builder.Services.AddSingleton<IConnectionMultiplexer>(
-                ConnectionMultiplexer.Connect(redisPrimaryConfig));
-
+            // Register the connection as a singleton service
+            builder.Services.AddSingleton(connection);
         }
 
         private static void AddSwagger(WebApplicationBuilder builder)

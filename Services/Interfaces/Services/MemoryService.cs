@@ -1,4 +1,6 @@
-﻿using StackExchange.Redis;
+﻿using Polly.Retry;
+using Polly;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +19,26 @@ namespace Services.Interfaces.Services
             connection = connectionMultiplexer;
 
         }
+
+        //   try connection for multiple times
+        private AsyncRetryPolicy CreateRetryPolicy()
+        {
+            return Policy.Handle<RedisConnectionException>() // Specify the exception type to handle
+                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
         public async Task<T?> GetAsync<T>(string key)
         {
-            var database = connection.GetDatabase();
+            //var retryPolicy = CreateRetryPolicy();
 
-            var value = await database.StringGetAsync(key); 
-            return value.HasValue ? JsonSerializer.Deserialize<T>(value) : default;
-        }
+            //return await retryPolicy.ExecuteAsync(async () =>
+            //{
+                var database = connection.GetDatabase();
+
+                var value = await database.StringGetAsync(key);
+                return value.HasValue ? JsonSerializer.Deserialize<T>(value) : default;
+            //});
+            }
         public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
         {
             var database = connection.GetDatabase();
@@ -53,6 +68,17 @@ namespace Services.Interfaces.Services
             }
 
             return result;
+        }
+
+        public async Task<long> IncrementValue(string key, long value)
+        {
+            var database = connection.GetDatabase();
+
+            // it increases the value of our data  
+            var data = database.StringIncrementAsync(key, value);
+
+            return await data;
+
         }
     }
 }
