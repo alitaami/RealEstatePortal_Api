@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using System;
@@ -13,6 +15,7 @@ namespace WebFramework.Configuration
 {
     public static class WebApplicationExtensions
     {
+        
         public static WebApplication Configure(this WebApplication app)
         {
             var logger = LogManager.Setup().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
@@ -29,7 +32,9 @@ namespace WebFramework.Configuration
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.MapControllers();
-
+                app.MapHangfireDashboard("/hangfire");
+                app.UseHangfireDashboard();
+                
                 if (app.Environment.IsDevelopment())
                 {
                     app.UseSwaggerAndUI();

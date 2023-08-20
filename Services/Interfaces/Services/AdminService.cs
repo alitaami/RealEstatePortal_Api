@@ -9,6 +9,7 @@ using Entities.Models.Advertises;
 using Entities.Models.Roles;
 using Entities.Models.User;
 using EstateAgentApi.Services.Base;
+using Hangfire;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,25 @@ namespace Services.Interfaces.Services
             _repoIm = repoIm;
         }
 
+        #region SendEmail Section
+        public async Task<ServiceResult> SendEmailInBackground(string subject, string body)
+        {
+
+            var users = _repo.TableNoTracking.ToList();
+            foreach (var user in users)
+            {
+                BackgroundJob.Enqueue(() => SendMail.SendAsync(user.Email, subject, body));
+
+                // *** this way is out of use ***
+                //_backgroundService.ScheduleDelayed(() => SendMail.SendAsync(user.Email, subject, body), delay);
+                // *** 
+            }
+            return Ok();
+        }
+        #endregion
+
         #region Advertise Section
+
         public async Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             try

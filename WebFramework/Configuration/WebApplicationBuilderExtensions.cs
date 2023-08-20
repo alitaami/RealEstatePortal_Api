@@ -5,10 +5,10 @@ using Data.Repositories;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Entities.Models.Roles;
 using Entities.Models.User;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,16 +24,9 @@ using NLog.Web;
 using Services.Interfaces;
 using Services.Interfaces.Services;
 using StackExchange.Redis;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using WebFramework.Configuration.Swagger;
 
 namespace WebFramework.Configuration
@@ -77,6 +70,8 @@ namespace WebFramework.Configuration
 
                 AddRedis(builder, configuration);
 
+                AddHangFire(builder, configuration);
+
                 AddMvcAndJsonOptions(builder);
 
                 AddMinimalMvc(builder);
@@ -114,7 +109,7 @@ namespace WebFramework.Configuration
             {
                 options.UseSqlServer("Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
-        } 
+        }
         private static void AddRedis(WebApplicationBuilder builder, IConfiguration configuration)
         {
             string redisConnectionString = "redis-18454.c1.us-central1-2.gce.cloud.redislabs.com:18454,password=ghBbFNfOWuTXPo9RalT1XBPhjJCydUXj,ssl=True,abortConnect=False,defaultDatabase=0";
@@ -123,6 +118,20 @@ namespace WebFramework.Configuration
 
             // Register the connection as a singleton service
             builder.Services.AddSingleton(connection);
+        }
+        public static void AddHangFire(WebApplicationBuilder builder, IConfiguration configuration)
+        {
+
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(@"Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject;
+                Integrated Security=true;Trust Server Certificate=true;"));
+
+            // Configure Hangfire dashboard
+            builder.Services.AddHangfireServer(); // This line starts the Hangfire background processing server
+
         }
 
         private static void AddSwagger(WebApplicationBuilder builder)
@@ -518,6 +527,7 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddTransient<IMemoryService, MemoryService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
+            builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
             builder.Services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

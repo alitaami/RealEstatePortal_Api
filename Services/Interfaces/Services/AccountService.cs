@@ -7,6 +7,7 @@ using Entities.Models.Roles;
 using Entities.Models.User;
 using Entities.ViewModels;
 using EstateAgentApi.Services.Base;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -314,6 +315,8 @@ namespace Services.Interfaces.Services
                 user.ActivationGuid = Guid.NewGuid();
 
                 await _repo.UpdateAsync(user, cancellationToken);
+
+                BackgroundJob.Schedule(() => SendMail.SendAsync(user.Email, "املاک آنلاین", $" {user.FullName}عزیز به املاک آنلاین خوش آمدید "), TimeSpan.FromSeconds(5));
 
                 return Ok(user);
 

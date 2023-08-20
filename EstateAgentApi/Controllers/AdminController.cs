@@ -18,6 +18,7 @@ using Common.Utilities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Entities.Models.Advertises;
 using Entities.Models.Roles;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace EstateAgentApi.Controllers
 {
@@ -40,8 +41,25 @@ namespace EstateAgentApi.Controllers
             _repo = repo;
             _admin = admin;
         }
+        /// <summary>
+        /// send email for users
+        /// </summary>
+        /// <param name="ad"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        [SwaggerOperation("ارسال ایمیل برای کاربران")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SendMailToUsers([FromBody] SendEmailForUsers u)
+        {
+            await _admin.SendEmailInBackground(u.Subject, u.Body);
 
-       
+            return Ok();
+        }
         /// <summary>
         /// Get all advertises
         /// </summary>

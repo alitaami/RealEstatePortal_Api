@@ -6,6 +6,7 @@ namespace Services.Interfaces
 {
     public interface IAdminService
     {
+        public Task<ServiceResult> SendEmailInBackground(string subject, string body);
         public Task<ServiceResult> GetAllAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0);
         public Task<ServiceResult> GetAdvertiseImages(int advertiseId);
         public Task<ServiceResult> CreateAdvertise([FromForm] UserAdvertiseViewModelForAdmin ua, CancellationToken cancellationToken);
