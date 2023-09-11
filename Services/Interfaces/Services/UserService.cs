@@ -228,7 +228,7 @@ namespace Services.Interfaces.Services
 
             }
         }
-      
+
         #endregion
 
         #region  Advertises Of User
@@ -1047,6 +1047,28 @@ namespace Services.Interfaces.Services
                 else
                     return false;
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, null, null);
+
+                throw new Exception(Resource.GeneralErrorTryAgain);
+            }
+        }
+
+        public async Task<string> GetUserIdByUsername(string userName)
+        {
+            try
+            {
+               var user = _repo.TableNoTracking
+                    .Where(u => u.UserName == userName)
+                    .FirstOrDefaultAsync() ;
+                   
+
+                if (user == null)
+                    throw new Exception(Resource.NotFound);///
+             
+                return user.Result.Id.ToString();
             }
             catch (Exception ex)
             {

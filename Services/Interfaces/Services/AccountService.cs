@@ -1,6 +1,7 @@
 ﻿using Common.Resources;
 using Common.Utilities;
 using Data.Repositories;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Entities.Base;
 using Entities.Common.ViewModels;
 using Entities.Models.Roles;
@@ -20,8 +21,13 @@ namespace Services.Interfaces.Services
         private IRepository<UserRoles> _repoUR;
         private IRepository<Role> _repoR;
         private IJwtService _jwtService;
-        public AccountService(ILogger<AccountService> logger, IJwtService jwtService, IRepository<UserForgetPassword> repof, IRepository<User> repo, IRepository<UserRoles> repoUR, IRepository<Role> repoR) : base(logger)
+        private readonly IUserService _user;
+        private readonly ICountOnlineUsersService _onlineUsersService;
+
+        public AccountService(ICountOnlineUsersService onlineUsersService, IUserService user,ILogger<AccountService> logger, IJwtService jwtService, IRepository<UserForgetPassword> repof, IRepository<User> repo, IRepository<UserRoles> repoUR, IRepository<Role> repoR) : base(logger)
         {
+            _onlineUsersService = onlineUsersService;
+            _user = user;
             _repo = repo;
             _repoUR = repoUR;
             _repoR = repoR;
@@ -176,6 +182,10 @@ namespace Services.Interfaces.Services
 
                 result.LastLoginDate = DateTimeOffset.Now;
                 _repo.Update(result);
+
+
+                string userId = await  _user.GetUserIdByUsername(tokenRequest.username);
+                await _onlineUsersService.MarkUserAsOnline(userId);
 
                 // Generate JWT token
 

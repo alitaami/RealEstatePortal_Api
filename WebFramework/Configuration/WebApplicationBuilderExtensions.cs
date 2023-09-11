@@ -3,6 +3,7 @@ using Common.Utilities;
 using Data;
 using Data.Repositories;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Entities.Common.ViewModels;
 using Entities.Models.Roles;
 using Entities.Models.User;
 using Hangfire;
@@ -69,6 +70,8 @@ namespace WebFramework.Configuration
                 AddAppDbContext(builder, configuration);
 
                 AddRedis(builder, configuration);
+                
+                AddRedisDb(builder, configuration);
 
                 AddHangFire(builder, configuration);
 
@@ -131,6 +134,13 @@ namespace WebFramework.Configuration
 
             // Configure Hangfire dashboard
             builder.Services.AddHangfireServer(); // This line starts the Hangfire background processing server
+
+        } 
+        public static void AddRedisDb(WebApplicationBuilder builder, IConfiguration configuration)
+        {
+
+            var cacheSettingConfiguration = builder.Configuration.GetSection("CacheSettings");
+            builder.Services.Configure<CacheSettings>(cacheSettingConfiguration);
 
         }
 
@@ -519,6 +529,7 @@ namespace WebFramework.Configuration
         private static void AddAppServices(WebApplicationBuilder builder)
         {
 
+            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
@@ -526,6 +537,7 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddTransient<IMemoryService, MemoryService>();
+            builder.Services.AddTransient<ICountOnlineUsersService, CountOnlineUsersService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
             builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
             builder.Services.Configure<IISServerOptions>(options =>

@@ -10,15 +10,8 @@ using Data.Repositories;
 using Services.Interfaces;
 using WebApiCourse.WebFramework.Base;
 using Microsoft.AspNetCore.Authorization;
-using Common;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Claims;
-using Common.Utilities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Entities.Models.Advertises;
 using Entities.Models.Roles;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace EstateAgentApi.Controllers
 {
@@ -33,13 +26,40 @@ namespace EstateAgentApi.Controllers
         private IAdvertiseService _ad;
         private IRepository<User> _repo;
         IAdminService _admin;
+        private readonly ICountOnlineUsersService _onlineUsersService;
 
-        public AdminController(ILogger<AdminController> logger, IRepository<User> repo, IAdvertiseService advertise, IAdminService admin)
+        public AdminController(ICountOnlineUsersService onlineUsersService, ILogger<AdminController> logger, IRepository<User> repo, IAdvertiseService advertise, IAdminService admin)
         {
+            _onlineUsersService = onlineUsersService;
             _logger = logger;
             _ad = advertise;
             _repo = repo;
             _admin = admin;
+        }
+        /// <summary>
+        /// CountOnlineUsers
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="advertiseText"></param>
+        /// <param name="homeAddress"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="saleType"></param>
+        /// <param name="startprice"></param>
+        /// <param name="endprice"></param>
+        /// <param name="startrentprice"></param>
+        /// <param name="endrentprice"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerOperation("شمردن کاربران انلاین")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> CountOnlineUsers() { 
+
+           int res = await _onlineUsersService.CountOnlineUsers();
+
+            return Ok(res);
         }
         /// <summary>
         /// send email for users
