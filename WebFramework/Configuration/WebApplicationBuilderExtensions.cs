@@ -129,13 +129,13 @@ namespace WebFramework.Configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(@"Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject;
+                .UseSqlServerStorage(@"Data Source =.; Initial Catalog=EstateProject;
                 Integrated Security=true;Trust Server Certificate=true;"));
 
             // Configure Hangfire dashboard
             builder.Services.AddHangfireServer(); // This line starts the Hangfire background processing server
 
-        } 
+        }
         public static void AddRedisDb(WebApplicationBuilder builder, IConfiguration configuration)
         {
 
@@ -540,6 +540,7 @@ namespace WebFramework.Configuration
             builder.Services.AddTransient<ICountOnlineUsersService, CountOnlineUsersService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
             builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+            builder.Services.AddMemoryCache();
             builder.Services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

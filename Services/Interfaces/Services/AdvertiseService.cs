@@ -16,6 +16,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using System.Runtime.Caching;
 using System.Text;
 using static Entities.Common.Dtos.UserAdvertiseDto;
 
@@ -33,6 +34,7 @@ namespace Services.Interfaces.Services
         ILogger<AdvertiseService> _logger;
         private readonly IUserService _user;
         private readonly IMemoryService _memory;
+        private readonly MemoryCache _cache;
         public AdvertiseService(IMemoryService memory, ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Entities.Models.Roles.Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
@@ -46,6 +48,7 @@ namespace Services.Interfaces.Services
             _repoIm = repoIm;
             _memory = memory;
             _logger = logger;
+            _cache = MemoryCache.Default;
         }
 
         #region public
@@ -53,7 +56,6 @@ namespace Services.Interfaces.Services
         {
             try
             {
-          
                 var cachedResult = await _memory
                     .GetAsync<SaleAdvertiseDto>(KeysForCache
                     .getAdvertiseForShowKey(advertiseId));
@@ -134,11 +136,23 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                IQueryable<UserAdvertises> result = _repoAd.Table.Where(u => !u.IsDelete && u.IsConfirm);
+                //using In Memory Cache
+                string key = "AllAdvertises";
+                IQueryable<UserAdvertises> result;
 
-                if (result is null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+                if (_cache.Contains(key))
+                {
+                    result = (IQueryable<UserAdvertises>)_cache.Get(key);
+                }
+                else
+                {
+                    result = _repoAd.Table.Where(u => !u.IsDelete && u.IsConfirm);
 
+                    if (result is null)
+                        return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                    _cache.Set(key, result, DateTimeOffset.Now.AddMinutes(10));
+                }
                 if (!string.IsNullOrEmpty(advertiseText))
                 {
                     result = result.Where(r => r.AdvertiseText.Contains(advertiseText));
@@ -228,7 +242,6 @@ namespace Services.Interfaces.Services
                 var finalResult = Tuple.Create(query, pagecount);
 
                 return Ok(finalResult);
-
             }
 
             catch (Exception ex)
