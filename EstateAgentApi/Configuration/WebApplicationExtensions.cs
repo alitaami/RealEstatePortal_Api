@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using Carter;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,7 @@ namespace WebFramework.Configuration
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.MapControllers();
+                app.MapCarter();
                 app.MapHangfireDashboard("/hangfire");
                 app.UseHangfireDashboard();
                 

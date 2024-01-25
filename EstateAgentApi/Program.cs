@@ -8,7 +8,7 @@ try
 {
     WebApplication
         .CreateBuilder(args)
-        .ConfigureServices()
+        .ConfigureServices()  
         .Build()
         .Configure()
         .Run();

@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using Carter;
+using Common;
 using Common.Utilities;
 using Data;
 using Data.Repositories;
@@ -6,6 +7,8 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Entities.Common.ViewModels;
 using Entities.Models.Roles;
 using Entities.Models.User;
+using EstateAgentApi;
+using EstateAgentApi.Controllers;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +29,7 @@ using Services.Interfaces;
 using Services.Interfaces.Services;
 using StackExchange.Redis;
 using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using WebFramework.Configuration.Swagger;
@@ -541,6 +545,7 @@ namespace WebFramework.Configuration
             builder.Services.AddAutoMapper(typeof(WebApplication));
             builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
             builder.Services.AddMemoryCache();
+            builder.Services.AddApiServices();
             builder.Services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
