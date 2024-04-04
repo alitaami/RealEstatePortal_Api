@@ -15,59 +15,57 @@ namespace WebApiCourse.WebFramework.Base
         {
             if (serviceResult.Result.HttpStatusCode == (int)HttpStatusCode.OK)
             {
+                var res = new ServiceResult(serviceResult.Data, new ApiResult(HttpStatusCode.OK, ErrorCodeEnum.None, null, null));
+
                 if (serviceResult.Data == null)
                     return Ok();
                 else
-                    return Ok(serviceResult.Data);
+                    return Ok(res);
             }
 
             else if (serviceResult.Result.HttpStatusCode == (int)HttpStatusCode.BadRequest)
+            {
                 return BadRequest(serviceResult.Result);
-
+            }
             else if (serviceResult.Result.HttpStatusCode == (int)HttpStatusCode.NotFound)
+            {
                 return NotFound(serviceResult.Result);
-
+            }
             else if (serviceResult.Result.HttpStatusCode == (int)HttpStatusCode.InternalServerError)
-                return StatusCode((int)HttpStatusCode.InternalServerError, serviceResult.Data);
-
-            else //TODO : این مورد بررسی بشه شاید نیاز به تغییر باشه
+            {
+                // Return a new ServiceResult with null data for internal server errors
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceResult(null, serviceResult.Result));
+            }
+            else
+            {
+                // Handle other cases, if needed
                 return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         protected IActionResult InternalServerError()
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError,
-                    new ApiResult(HttpStatusCode.InternalServerError,
-                    ErrorCodeEnum.InternalError,
-                    Resource.GeneralErrorTryAgain
-                    , null));
+            return APIResponse(new ServiceResult(null, CreateInternalErrorResult(ErrorCodeEnum.InternalError, null)));
         }
 
         protected IActionResult InternalServerError(ErrorCodeEnum error)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError,
-                    new ApiResult(HttpStatusCode.InternalServerError,
-                    error,
-                    Resource.GeneralErrorTryAgain
-                    , null));
+            return APIResponse(new ServiceResult(null, CreateInternalErrorResult(error, null)));
         }
 
         protected IActionResult InternalServerError(string message)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError,
-                    new ApiResult(HttpStatusCode.InternalServerError,
-                    ErrorCodeEnum.InternalError,
-                    message
-                    , null));
+            return APIResponse(new ServiceResult(null, CreateInternalErrorResult(ErrorCodeEnum.InternalError, message)));
         }
 
-        protected IActionResult InternalServerError(ErrorCodeEnum error,string message)
+        protected IActionResult InternalServerError(ErrorCodeEnum error, string message)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError,
-                    new ApiResult(HttpStatusCode.InternalServerError,
-                    error,
-                    message
-                    , null));
+            return APIResponse(new ServiceResult(null, CreateInternalErrorResult(error, message)));
+        }
+
+        private ApiResult CreateInternalErrorResult(ErrorCodeEnum error, string? message)
+        {
+            return new ApiResult(HttpStatusCode.InternalServerError, error, message, null);
         }
     }
 }

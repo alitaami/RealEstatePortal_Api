@@ -1,4 +1,5 @@
-﻿using Common.Resources;
+﻿using Common;
+using Common.Resources;
 using Common.Utilities;
 using Data;
 using Data.Repositories;
@@ -11,7 +12,12 @@ using Entities.Models.Roles;
 using Entities.Models.User;
 using EstateAgentApi.Services.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using StackExchange.Redis;
+using System.Runtime.Caching;
+using System.Text;
 using static Entities.Common.Dtos.UserAdvertiseDto;
 
 namespace Services.Interfaces.Services
@@ -21,14 +27,15 @@ namespace Services.Interfaces.Services
         private IRepository<User> _repo;
         private IRepository<UserAdvertises> _repoAd;
         private IRepository<UserRoles> _repoUR;
-        private IRepository<Role> _repoR;
+        private IRepository<Entities.Models.Roles.Role> _repoR;
         private IRepository<AdvertiseAvailableVisitDays> _repoAv;
         private IRepository<AdvertiseVisitRequests> _repoReq;
         private IRepository<AdvertiseImages> _repoIm;
         ILogger<AdvertiseService> _logger;
         private readonly IUserService _user;
-
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        private readonly IMemoryService _memory;
+        private readonly MemoryCache _cache;
+        public AdvertiseService(IMemoryService memory, ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Entities.Models.Roles.Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
             //_jwtService = jwtService;
@@ -39,6 +46,9 @@ namespace Services.Interfaces.Services
             _repoReq = req;
             _user = user;
             _repoIm = repoIm;
+            _memory = memory;
+            _logger = logger;
+            _cache = MemoryCache.Default;
         }
 
         #region public
@@ -46,19 +56,26 @@ namespace Services.Interfaces.Services
         {
             try
             {
+                var cachedResult = await _memory
+                    .GetAsync<SaleAdvertiseDto>(KeysForCache
+                    .getAdvertiseForShowKey(advertiseId));
+
+                if (cachedResult != null)
+                {
+                    return Ok(cachedResult);
+                }
+
                 var ua = await _repoAd.TableNoTracking
-                .Where(u => u.Id == advertiseId && !u.IsDelete && u.IsConfirm)
-                .FirstOrDefaultAsync();
+                    .Where(u => u.Id == advertiseId && !u.IsDelete && u.IsConfirm)
+                    .FirstOrDefaultAsync();
 
                 if (ua == null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);///
+                    return NotFound(ErrorCodeEnum.NotFound, Resource.AdveriseNotFound, null);
 
                 if (!ua.ForSale)
                 {
-
                     var result = new RentAdvertiseDto
                     {
-
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
@@ -74,18 +91,15 @@ namespace Services.Interfaces.Services
                         HasGarage = ua.HasGarage,
                         BuildingType = ua.BuildingType,
                         Description = ua.Description,
-                        CreatedDate = ua.CreatedDate,
-
+                        CreatedDate = ua.CreatedDate
                     };
 
-                    return Ok(result);
+                    return Ok(result); // Return the result
                 }
-
                 else
                 {
                     var result = new SaleAdvertiseDto
                     {
-
                         AdvertiserName = ua.AdvertiserName,
                         AdvertiserNumber = ua.AdvertiserNumber,
                         AdvertiseText = ua.AdvertiseText,
@@ -101,19 +115,20 @@ namespace Services.Interfaces.Services
                         HasGarage = ua.HasGarage,
                         BuildingType = ua.BuildingType,
                         Description = ua.Description,
-                        CreatedDate = ua.CreatedDate,
-
+                        CreatedDate = ua.CreatedDate
                     };
 
-                    return Ok(result);
+                    await _memory
+                        .SetAsync(KeysForCache
+                        .getAdvertiseForShowKey(advertiseId), result, TimeSpan.FromMinutes(30));
+
+                    return Ok(result); // Return the result
                 }
 
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, null, null);
-
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
@@ -121,11 +136,23 @@ namespace Services.Interfaces.Services
         {
             try
             {
-                IQueryable<UserAdvertises> result = _repoAd.Table.Where(u => !u.IsDelete && u.IsConfirm);
+                //using In Memory Cache
+                string key = "AllAdvertises";
+                IQueryable<UserAdvertises> result;
 
-                if (result is null)
-                    return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+                if (_cache.Contains(key))
+                {
+                    result = (IQueryable<UserAdvertises>)_cache.Get(key);
+                }
+                else
+                {
+                    result = _repoAd.Table.Where(u => !u.IsDelete && u.IsConfirm);
 
+                    if (result is null)
+                        return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
+
+                    _cache.Set(key, result, DateTimeOffset.Now.AddMinutes(10));
+                }
                 if (!string.IsNullOrEmpty(advertiseText))
                 {
                     result = result.Where(r => r.AdvertiseText.Contains(advertiseText));
@@ -215,7 +242,6 @@ namespace Services.Interfaces.Services
                 var finalResult = Tuple.Create(query, pagecount);
 
                 return Ok(finalResult);
-
             }
 
             catch (Exception ex)
@@ -279,7 +305,7 @@ namespace Services.Interfaces.Services
 
                 #region conditions
                 var result = _repoAv.TableNoTracking
-                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay==dayOfWeek);
+                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay == dayOfWeek);
 
                 if (!result)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
@@ -320,9 +346,9 @@ namespace Services.Interfaces.Services
 
                 var res = new AdvertiseVisitRequestsDto
                 {
-                    AdvertiseId= req.AdvertiseId,
+                    AdvertiseId = req.AdvertiseId,
                     AvailableVisitDay = req.AvailableVisitDay,
-                    FullNameOfUser= req.FullNameOfUser,
+                    FullNameOfUser = req.FullNameOfUser,
                     IsConfirm = req.IsConfirm
 
                 };
