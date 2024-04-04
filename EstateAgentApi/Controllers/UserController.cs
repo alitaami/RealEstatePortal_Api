@@ -14,7 +14,6 @@ using Entities.Common.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using Entities.Models.Advertises;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace WebApiCourse.Controllers.v1
 {
@@ -35,7 +34,7 @@ namespace WebApiCourse.Controllers.v1
             _user = user;
             _repo = repo;
         }
-       
+
         /// <summary>
         /// Get user info for user panel
         /// </summary>
@@ -69,7 +68,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [Authorize(Roles = "2")]
-        public async Task<IActionResult> UpdateUserInfo(UserPanelViewModel ua, CancellationToken cancellationToken)
+         public async Task<IActionResult> UpdateUserInfo(UserPanelViewModel ua, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -227,7 +226,7 @@ namespace WebApiCourse.Controllers.v1
         [ProducesResponseType(typeof(UserAdvertiseDto.AdvertiseImagesDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> DeleteAdvertiseImageOfUser(int fileId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAdvertiseImageOfUser(int fileId , CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

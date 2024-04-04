@@ -29,7 +29,6 @@ namespace Services.Interfaces
         public Task<ServiceResult> AdvertiserConfirmRequestsForVisit(int reqId, int userId);
         public Task<ServiceResult> UserRequestsForVisit(int userId);
         public Task<ServiceResult> UserDeleteRequestsForVisit(int reqId, int userId);
-        public Task<string> GetUserIdByUsername(string userName);
 
         #region Mostly repeated codes
         public bool CheckUserHasThisAdvertise(int advertiseId, int userId);

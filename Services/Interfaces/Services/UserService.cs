@@ -2,7 +2,6 @@
 using Common.Resources;
 using Common.Utilities;
 using Data.Repositories;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Entities.Base;
 using Entities.Common.Dtos;
 using Entities.Common.ViewModels;
@@ -10,22 +9,17 @@ using Entities.Models.Advertises;
 using Entities.Models.Roles;
 using Entities.Models.User;
 using EstateAgentApi.Services.Base;
-using Hangfire;
-using Hangfire.Storage.Monitoring;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using static Entities.Common.Dtos.UserAdvertiseDto;
 using Path = System.IO.Path;
-
 
 namespace Services.Interfaces.Services
 {
     public class UserService : ServiceBase<UserService>, IUserService
     {
-        private IBackgroundJobService _backgroundService;
         private IRepository<User> _repo;
         private IRepository<UserRoles> _repoUR;
         private IRepository<Role> _repoR;
@@ -35,11 +29,10 @@ namespace Services.Interfaces.Services
         private IRepository<AdvertiseImages> _repoIm;
         private IWebHostEnvironment _env;
         private readonly IJwtService _jwtService;
-        public UserService(IBackgroundJobService backgroundJobService, ILogger<UserService> logger, IRepository<AdvertiseImages> repoIm, IWebHostEnvironment env, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
+        public UserService(ILogger<UserService> logger, IRepository<AdvertiseImages> repoIm, IWebHostEnvironment env, IRepository<AdvertiseVisitRequests> repoReq, IRepository<UserAdvertises> repoad, IRepository<User> repository, IJwtService jwtService, IRepository<UserRoles> repoUR, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<Role> repoR) : base(logger)
         {
             _repo = repository;
             _repoUR = repoUR;
-            _backgroundService = backgroundJobService;
             _repoR = repoR;
             _jwtService = jwtService;
             _repoAd = repoad;
@@ -47,7 +40,6 @@ namespace Services.Interfaces.Services
             _repoReq = repoReq;
             _repoIm = repoIm;
             _env = env;
-
         }
 
         #region User Panel
@@ -68,7 +60,7 @@ namespace Services.Interfaces.Services
 
                 if (userRole == null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
-
+ 
                 if (userRole.RoleId == 2 || !!CheckRoleExistence(userRole.RoleId))
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleDoesNotMatchUser, null);///
                 #endregion
@@ -149,6 +141,7 @@ namespace Services.Interfaces.Services
                 }
                 else
                 {
+
                     var user = new UserDto
                     {
                         UserName = u.UserName,
@@ -159,14 +152,17 @@ namespace Services.Interfaces.Services
                         LastLoginDate = u.LastLoginDate
 
                     };
+
                     return Ok(user);
                 }
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, null, null);
 
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
+
             }
         }
         public async Task<ServiceResult> UpdateUserInfo(int userId, UserPanelViewModel user, CancellationToken cancellationToken)
@@ -186,8 +182,8 @@ namespace Services.Interfaces.Services
 
                 if (userRole == null)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);///
-
-                if (userRole.RoleId == 1 || !CheckRoleExistence(userRole.RoleId))
+                 
+                if (userRole.RoleId == 1 || !CheckRoleExistence(userRole.RoleId)) 
                     return BadRequest(ErrorCodeEnum.BadRequest, Resource.RoleDoesNotMatchUser, null);///
                 #endregion
 
@@ -502,7 +498,7 @@ namespace Services.Interfaces.Services
 
                 }).Skip(skip).Take(take).ToList();
 
-                var finalResult = System.Tuple.Create(query, pagecount);
+                var finalResult = Tuple.Create(query, pagecount);
 
                 return Ok(finalResult);
 
@@ -516,10 +512,10 @@ namespace Services.Interfaces.Services
         public async Task<ServiceResult> GetAdvertiseImagesOfUser(int advertiseId, int userId)
         {
             var advertise = _repoAd.TableNoTracking
-                .Where(u => u.Id == advertiseId)
+                .Where(u=>u.Id == advertiseId)
                 .FirstOrDefault();
 
-            if (advertise is null)
+            if(advertise is null)
                 return NotFound(ErrorCodeEnum.NotFound, Resource.NotFound, null);
 
             var images = _repoIm.TableNoTracking
@@ -1055,30 +1051,6 @@ namespace Services.Interfaces.Services
                 throw new Exception(Resource.GeneralErrorTryAgain);
             }
         }
-
-        public async Task<string> GetUserIdByUsername(string userName)
-        {
-            try
-            {
-               var user = _repo.TableNoTracking
-                    .Where(u => u.UserName == userName)
-                    .FirstOrDefaultAsync() ;
-                   
-
-                if (user == null)
-                    throw new Exception(Resource.NotFound);///
-             
-                return user.Result.Id.ToString();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, null, null);
-
-                throw new Exception(Resource.GeneralErrorTryAgain);
-            }
-        }
-
-
         #endregion
 
     }

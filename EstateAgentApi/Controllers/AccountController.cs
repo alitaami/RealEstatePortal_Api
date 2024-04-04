@@ -25,13 +25,15 @@ namespace EstateAgentApi.Controllers
     /// 
     /// </summary>
     [SwaggerTag("سرویس های احراز هویت")]
-
+  
     public class AccountController : APIControllerBase
     {
         private readonly ILogger<AccountController> _logger;
         private IAccountService _acc;
         private IJwtService _jwt;
         private IRepository<User> _repo;
+
+
         public AccountController(ILogger<AccountController> logger, IAccountService acc, IJwtService jwt, IRepository<User> repo)
         {
             _logger = logger;
@@ -74,7 +76,7 @@ namespace EstateAgentApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EstateAgentSignUp(EstateUserViewModel user, CancellationToken cancellationToken)
         {
-
+          
             var result = await _acc.EstateAgentSignUp(user, cancellationToken);
 
             return Ok(result);
@@ -93,10 +95,11 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromForm] TokenRequest tokenRequest, CancellationToken cancellationToken)
-        { 
+        {
             var result = await _acc.Login(tokenRequest, cancellationToken);
- 
-            return APIResponse(result); 
+
+            return APIResponse(result);
+
         }
         /// <summary>
         /// Activate Account
@@ -190,11 +193,11 @@ namespace EstateAgentApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AssignNewPassword(int userId, AssignNewPasswordViewModel model, CancellationToken cancellationToken)
         {
-            var result = await _acc.AssignNewPassword(userId, model, cancellationToken);
+            var result = await _acc.AssignNewPassword(userId,model, cancellationToken);
 
             return APIResponse(result);
 
         }
-
+   
     }
 }

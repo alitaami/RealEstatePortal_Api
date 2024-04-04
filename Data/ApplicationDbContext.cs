@@ -1,7 +1,9 @@
 ﻿using Common.Utilities;
 using Entities.Common;
+using Entities.Models.Advertises;
 using Entities.Models.User;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace Data
 {
@@ -14,7 +16,8 @@ namespace Data
 
         #region Override OnModelCreating
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { 
+        {
+
             base.OnModelCreating(modelBuilder);
 
             // we need assembly of Entities Class Library, IEntity exists in that class library and we get assembly from that
@@ -48,7 +51,9 @@ namespace Data
            
             modelBuilder.Entity<User>()
                .HasIndex(x => x.Email)
-            .IsUnique(); 
+            .IsUnique();
+
+            
         }
         #endregion 
 
