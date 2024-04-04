@@ -7,6 +7,7 @@ using Entities.Models.Roles;
 using Entities.Models.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -33,6 +34,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using WebFramework.Configuration.Swagger;
 
@@ -90,6 +92,8 @@ namespace WebFramework.Configuration
 
                 AddAppHsts(builder);
 
+                ApiRateLimiter(builder);
+
 #if !DEBUG
            //ApplyRemainingMigrations(builder); // TODO : بررسی بشه امکان اجرا در این حالت داره یا نه و گرنه باید به قسمت middleware برده بشه
 #endif
@@ -107,6 +111,28 @@ namespace WebFramework.Configuration
             builder.Logging.ClearProviders();
             builder.Logging.AddNLogWeb();
             builder.Host.UseNLog();
+        }
+
+        private static void ApiRateLimiter(WebApplicationBuilder builder)
+        { 
+            builder.Services.AddRateLimiter(options =>
+            {
+                // Set the status code to be returned when the rate limit is exceeded
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                // Add a rate limiting policy named "test"
+                options.AddPolicy("test", httpContext =>
+                    // Get a fixed window rate limiter based on the client's IP address   
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+                        factory: x => new FixedWindowRateLimiterOptions
+                        {
+                            // Set the maximum number of permits allowed within the window
+                            PermitLimit = 5,
+                            // Set the duration of the window 
+                            Window = TimeSpan.FromSeconds(5)
+                        }));
+            });
         }
 
         private static void AddAppDbContext(WebApplicationBuilder builder, IConfiguration configuration)
@@ -256,7 +282,7 @@ namespace WebFramework.Configuration
 
                 //    return versions.Any(v => $"v{v.ToString()}" == docName);
                 //});
-#endregion
+                #endregion
 
                 //If use FluentValidation then must be use this package to show validation in swagger (MicroElements.Swashbuckle.FluentValidation)
                 //options.AddFluentValidationRules();
@@ -286,7 +312,7 @@ namespace WebFramework.Configuration
         private static void AddMvcAndJsonOptions(WebApplicationBuilder builder)
         {
             builder.Services
-                             .AddControllers()        
+                             .AddControllers()
                              .AddJsonOptions(options =>
                              {
                                  options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -372,8 +398,8 @@ namespace WebFramework.Configuration
 
         public static void AddJwtAuthentication(this IServiceCollection services, JwtSettings jwtSettings)
         {
-     
-          
+
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -506,7 +532,7 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<IJwtService, JwtService>();      
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));

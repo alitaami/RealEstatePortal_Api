@@ -16,6 +16,7 @@ using Common.Utilities;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entities.Models.Advertises;
 using System;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EstateAgentApi.Controllers
 {
@@ -52,6 +53,7 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
+        [EnableRateLimiting("test")]
         public async Task<IActionResult> GetAdvertises(int pageId = 1, string advertiseText = "", string homeAddress = "", string orderBy = "date", string saleType = "all", long startprice = 0, long endprice = 0, long startrentprice = 0, long endrentprice = 0)
         {
             var result = await _Ad.GetAllAdvertises(pageId, advertiseText, homeAddress, orderBy, saleType, startprice, endprice, startrentprice, endrentprice);

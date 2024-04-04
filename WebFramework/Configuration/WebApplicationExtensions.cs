@@ -30,6 +30,9 @@ namespace WebFramework.Configuration
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.MapControllers();
+              
+                
+                app.UseRateLimiter();
 
                 if (app.Environment.IsDevelopment())
                 {

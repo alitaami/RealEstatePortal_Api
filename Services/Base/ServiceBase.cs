@@ -13,8 +13,8 @@ namespace EstateAgentApi.Services.Base
     public class ServiceBase<Tclass>
     {
         protected readonly ILogger<Tclass> _logger;
-         public ServiceBase(
-            ILogger<Tclass> logger)
+        public ServiceBase(
+           ILogger<Tclass> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -32,7 +32,7 @@ namespace EstateAgentApi.Services.Base
                 }
                 else
                 {
-                    return InternalServerError(ErrorCodeEnum.None,Resource.GeneralErrorTryAgain, null);
+                    return InternalServerError(ErrorCodeEnum.None, Resource.GeneralErrorTryAgain, null);
                 }
             }
             catch (Exception generalEx)
