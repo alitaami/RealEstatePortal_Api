@@ -13,25 +13,39 @@ using EstateAgentApi.Services.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using static Entities.Common.Dtos.UserAdvertiseDto;
+using Nest;
+using System.Net.NetworkInformation;
 
 namespace Services.Interfaces.Services
 {
     public class AdvertiseService : ServiceBase<AdvertiseService>, IAdvertiseService
     {
-        private IRepository<User> _repo;
-        private IRepository<UserAdvertises> _repoAd;
-        private IRepository<UserRoles> _repoUR;
-        private IRepository<Role> _repoR;
-        private IRepository<AdvertiseAvailableVisitDays> _repoAv;
-        private IRepository<AdvertiseVisitRequests> _repoReq;
-        private IRepository<AdvertiseImages> _repoIm;
+        private Data.Repositories.IRepository<User> _repo;
+        private Data.Repositories.IRepository<UserAdvertises> _repoAd;
+        private Data.Repositories.IRepository<UserRoles> _repoUR;
+        private Data.Repositories.IRepository<Role> _repoR;
+        private Data.Repositories.IRepository<AdvertiseAvailableVisitDays> _repoAv;
+        private Data.Repositories.IRepository<AdvertiseVisitRequests> _repoReq;
+        private Data.Repositories.IRepository<AdvertiseImages> _repoIm;
+        private readonly IElasticClient _elasticClient; // Add ElasticClient as a dependency
+
         ILogger<AdvertiseService> _logger;
         private readonly IUserService _user;
 
-        public AdvertiseService(ILogger<AdvertiseService> logger, IRepository<AdvertiseImages> repoIm, IUserService user, IRepository<AdvertiseVisitRequests> req, IRepository<AdvertiseAvailableVisitDays> repoav, IRepository<User> repository, ApplicationDbContext context,/* IJwtService jwtService,*/ IRepository<UserRoles> repoUR, IRepository<Role> repoR, IRepository<UserAdvertises> repoAd) : base(logger)
+        public AdvertiseService(ILogger<AdvertiseService> logger,
+                                Data.Repositories.IRepository<AdvertiseImages> repoIm,
+                                IUserService user,
+                                Data.Repositories.IRepository<AdvertiseVisitRequests> req,
+                                Data.Repositories.IRepository<AdvertiseAvailableVisitDays> repoav,
+                                Data.Repositories.IRepository<User> repository,
+                                ApplicationDbContext context,
+                                IElasticClient elasticClient, // Inject ElasticClient
+                                Data.Repositories.IRepository<UserRoles> repoUR,
+                                Data.Repositories.IRepository<Role> repoR,
+                                Data.Repositories.IRepository<UserAdvertises> repoAd) : base(logger)
         {
             _repo = repository;
-            //_jwtService = jwtService;
+            _elasticClient = elasticClient;
             _repoUR = repoUR;
             _repoR = repoR;
             _repoAd = repoAd;
@@ -224,6 +238,29 @@ namespace Services.Interfaces.Services
                 return InternalServerError(ErrorCodeEnum.InternalError, Resource.GeneralErrorTryAgain, null);
             }
         }
+     
+        public async Task<ServiceResult> SearchAdvertises_ElasticSearch(string searchTerm = "")
+        {
+            var searchResponse = await _elasticClient.SearchAsync<UserAdvertises>(s => s
+                .Index("advertises") // Elasticsearch index name
+                .Query(q => q
+                    .MultiMatch(m => m //Using MultiMatch to query multiple fields
+                        .Fields(f => f  // Fields to search in
+                        .Field("AdvertiserName")
+                        .Field("AdvertiseText")
+                        .Field("Address")
+                        )
+                        .Query(searchTerm)
+                    )
+                )
+            );
+
+            if (!searchResponse.IsValid)
+                return BadRequest(ErrorCodeEnum.BadRequest, Resource.ElasticSearchError, null);
+
+            return Ok(searchResponse.Documents.ToList());
+        }
+
         public async Task<ServiceResult> GetAdvertiseImages(int advertiseId)
         {
             var images = _repoIm.TableNoTracking
@@ -279,7 +316,7 @@ namespace Services.Interfaces.Services
 
                 #region conditions
                 var result = _repoAv.TableNoTracking
-                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay==dayOfWeek);
+                    .Any(u => u.AdvertiseId == advertiseId && u.AvailableVisitDay == dayOfWeek);
 
                 if (!result)
                     return NotFound(ErrorCodeEnum.NotFound, Resource.AdvertiseDayNotMatch, null);///
@@ -320,9 +357,9 @@ namespace Services.Interfaces.Services
 
                 var res = new AdvertiseVisitRequestsDto
                 {
-                    AdvertiseId= req.AdvertiseId,
+                    AdvertiseId = req.AdvertiseId,
                     AvailableVisitDay = req.AvailableVisitDay,
-                    FullNameOfUser= req.FullNameOfUser,
+                    FullNameOfUser = req.FullNameOfUser,
                     IsConfirm = req.IsConfirm
 
                 };

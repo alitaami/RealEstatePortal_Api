@@ -40,7 +40,7 @@ namespace Data
             // When it creates tables , it pluralize name   example =>  Class name : User , TableName : Users
             modelBuilder.AddPluralizingTableNameConvention();
 
-
+ 
             modelBuilder.Entity<User>()
                .HasIndex(x => x.UserName)
                .IsUnique();

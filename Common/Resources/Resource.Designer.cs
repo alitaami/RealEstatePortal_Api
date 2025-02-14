@@ -151,6 +151,15 @@ namespace Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Elasticsearch query failed..
+        /// </summary>
+        public static string ElasticSearchError {
+            get {
+                return ResourceManager.GetString("ElasticSearchError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to درخواست بازدید شما از ملک آگهی شده.
         /// </summary>
         public static string EmailSubject1 {

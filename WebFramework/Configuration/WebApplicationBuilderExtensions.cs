@@ -3,6 +3,7 @@ using Common.Utilities;
 using Data;
 using Data.Repositories;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Entities.Base;
 using Entities.Models.Roles;
 using Entities.Models.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -86,6 +88,8 @@ namespace WebFramework.Configuration
 
                 AddAppServices(builder);
 
+                AddElasticSearch(builder);
+
                 //AddCustomApiVersioning(builder);
 
                 AddSwagger(builder);
@@ -114,7 +118,7 @@ namespace WebFramework.Configuration
         }
 
         private static void ApiRateLimiter(WebApplicationBuilder builder)
-        { 
+        {
             builder.Services.AddRateLimiter(options =>
             {
                 // Set the status code to be returned when the rate limit is exceeded
@@ -139,7 +143,7 @@ namespace WebFramework.Configuration
         {
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Data Source =DESKTOP-96I4231; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
+                options.UseSqlServer("Data Source =.; Initial Catalog=EstateProject; Integrated Security=true;Trust Server Certificate=true;");
             });
         }
 
@@ -453,8 +457,8 @@ namespace WebFramework.Configuration
                     OnTokenValidated = async context =>
                     {
                         //var applicationSignInManager = context.HttpContext.RequestServices.GetRequiredService<IApplicationSignInManager>();
-                        var userRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<User>>();
-                        var userroleRepository = context.HttpContext.RequestServices.GetRequiredService<IRepository<UserRoles>>();
+                        var userRepository = context.HttpContext.RequestServices.GetRequiredService<Data.Repositories.IRepository<User>>();
+                        var userroleRepository = context.HttpContext.RequestServices.GetRequiredService<Data.Repositories.IRepository<UserRoles>>();
                         var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
 
                         var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
@@ -529,17 +533,38 @@ namespace WebFramework.Configuration
         private static void AddAppServices(WebApplicationBuilder builder)
         {
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped(typeof(Data.Repositories.IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
+
             builder.Services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
             });
+        }
+
+        private static void AddElasticSearch(WebApplicationBuilder builder)
+        {
+            // Elasticsearch settings
+            var settings = new ConnectionSettings(new Uri("http://localhost:9200")) // Your Elasticsearch URL
+                            .DefaultIndex("advertises"); // Default index
+
+            var client = new ElasticClient(settings);
+
+            var pingResponse = client.PingAsync().Result;
+
+            if (!pingResponse.IsValid)
+            {
+               Console.WriteLine($"Elasticsearch is not reachable. Status: {pingResponse.DebugInformation}");
+            }
+
+            // Register the ElasticClient as a singleton
+            builder.Services.AddSingleton<IElasticClient>(client);
+
         }
 
         private static void AddAppHsts(WebApplicationBuilder builder)

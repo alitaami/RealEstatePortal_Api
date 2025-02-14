@@ -43,6 +43,8 @@ namespace WebFramework.Configuration.Swagger
                 #endregion
 
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
+                options.HeadContent = @"<style>body { background-color: #d5dcdf !important; }</style>";
+                options.InjectStylesheet("/swagger-ui/custom.css");
             });
         }
     }

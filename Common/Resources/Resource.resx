@@ -246,4 +246,7 @@
   <data name="WrongDaySelected" xml:space="preserve">
     <value>روز های هفته باید شامل شنبه تا جمعه باشند</value>
   </data>
+  <data name="ElasticSearchError" xml:space="preserve">
+    <value>Elasticsearch query failed.</value>
+  </data>
 </root>

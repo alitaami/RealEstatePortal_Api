@@ -32,7 +32,7 @@ namespace EstateAgentApi.Controllers
             _Ad = ad;
 
         }
-    
+
         /// <summary>
         /// Get all advertises
         /// </summary>
@@ -60,7 +60,35 @@ namespace EstateAgentApi.Controllers
 
             return APIResponse(result);
         }
-        
+
+        /// <summary>
+        /// Get all advertises using elastic search
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="searchTerm"></param>
+        /// <param name="homeAddress"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="saleType"></param>
+        /// <param name="startprice"></param>
+        /// <param name="endprice"></param>
+        /// <param name="startrentprice"></param>
+        /// <param name="endrentprice"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerOperation("لیست اگهی ها - با استفاده از الاستیک سرچ")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(UserAdvertisesForHomePage), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
+        [AllowAnonymous]
+        [EnableRateLimiting("test")]
+        public async Task<IActionResult> GetAdvertises_ElasticSearch(string searchTerm = "")
+        {
+            var result = await _Ad.SearchAdvertises_ElasticSearch(searchTerm);
+
+            return APIResponse(result);
+        }
+
         /// <summary>
         /// Get advertise detail by advertiseId
         /// </summary>
@@ -73,17 +101,18 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
+        [EnableRateLimiting("test")]
         public async Task<IActionResult> AdvertiseDetail(int advertiseId)
         {
             var result = await _Ad.GetAdveriseForShow(advertiseId);
 
             return APIResponse(result);
         }
-         /// <summary>
-         /// Show images of advertise
-         /// </summary>
-         /// <param name="advertiseId"></param>
-         /// <returns></returns>
+        /// <summary>
+        /// Show images of advertise
+        /// </summary>
+        /// <param name="advertiseId"></param>
+        /// <returns></returns>
         [HttpGet]
         [SwaggerOperation("لیست عکس های اگهی")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -114,7 +143,7 @@ namespace EstateAgentApi.Controllers
             var result = await _Ad.GetAdvertiseAvailableVisitDays(advertiseId);
 
             return APIResponse(result);
-        }  
+        }
         /// <summary>
         /// Send request to visit advertise (need authorization)
         /// </summary>
@@ -128,13 +157,13 @@ namespace EstateAgentApi.Controllers
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ApiResult), (int)HttpStatusCode.InternalServerError)]
         [Authorize]
-        public async Task<IActionResult> RequestForAdvertiseVisit(DateTimeOffset dayOfWeek, int advertiseId )
+        public async Task<IActionResult> RequestForAdvertiseVisit(DateTimeOffset dayOfWeek, int advertiseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var fullname = User.FindFirstValue(ClaimTypes.Name);
 
-            
-            var result = await _Ad.RequestForAdvertiseVisit(dayOfWeek,advertiseId,userId.ToInt(),fullname);
+
+            var result = await _Ad.RequestForAdvertiseVisit(dayOfWeek, advertiseId, userId.ToInt(), fullname);
 
             return APIResponse(result);
         }
