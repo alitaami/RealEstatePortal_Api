@@ -22,7 +22,7 @@ namespace Entities.Base
 
         public int HttpStatusCode { get; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))] // Using System.Text.Json's Enum Converter
         public ErrorCodeEnum ErrorCode { get; }
 
         public string? ErrorMessage { get; }

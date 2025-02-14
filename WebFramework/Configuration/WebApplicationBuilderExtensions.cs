@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using Carter;
+using Common;
 using Common.Utilities;
 using Data;
 using Data.Repositories;
@@ -6,6 +7,7 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Entities.Base;
 using Entities.Models.Roles;
 using Entities.Models.User;
+using EstateAgentApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,8 +27,7 @@ using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Web;
 using Services.Interfaces;
-using Services.Interfaces.Services;
-
+using Services.Interfaces.Services; 
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -97,6 +98,7 @@ namespace WebFramework.Configuration
                 AddAppHsts(builder);
 
                 ApiRateLimiter(builder);
+               
 
 #if !DEBUG
            //ApplyRemainingMigrations(builder); // TODO : بررسی بشه امکان اجرا در این حالت داره یا نه و گرنه باید به قسمت middleware برده بشه
@@ -531,8 +533,7 @@ namespace WebFramework.Configuration
 
         //}
         private static void AddAppServices(WebApplicationBuilder builder)
-        {
-
+        { 
             builder.Services.AddScoped(typeof(Data.Repositories.IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IAdvertiseService, AdvertiseService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
@@ -540,6 +541,10 @@ namespace WebFramework.Configuration
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(WebApplication));
+
+            builder.Services.AddApiServices();  // This registers Home_MinimalApi and other services
+
+            builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.Configure<IISServerOptions>(options =>
             {

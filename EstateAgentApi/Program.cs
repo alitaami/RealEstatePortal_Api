@@ -1,3 +1,6 @@
+using EstateAgentApi;
+using EstateAgentApi.MinimalApi;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NLog;
 using NLog.Web;
 using WebFramework.Configuration;
@@ -7,7 +10,7 @@ var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentCla
 try
 {
     WebApplication
-        .CreateBuilder(args)
+        .CreateBuilder(args) 
         .ConfigureServices()
         .Build()
         .Configure()

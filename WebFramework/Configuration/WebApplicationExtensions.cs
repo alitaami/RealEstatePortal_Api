@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Carter;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using System;
@@ -30,8 +31,8 @@ namespace WebFramework.Configuration
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.MapControllers();
-              
-                
+
+                app.MapCarter();
                 app.UseRateLimiter();
 
                 if (app.Environment.IsDevelopment())
